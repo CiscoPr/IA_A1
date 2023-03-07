@@ -4,10 +4,8 @@
 Space Block – Roll the Block is a puzzle game in which the player must manage to place a block vertically in the position of the exit portal of each level. This block can roll in 4 directions (front, back, right and left) and must reach the objective without falling from the floating platform.
 
 ## Sources
-Space Block: Roll the Block Pu. (30 de 09 de 2020). Obtained from https://play.google.com/store/apps/details?id=com.zawor.spaceblock&hl=en&gl=US
+ This project is based on the game Space Block: Roll the Block Pu. (30 de 09 de 2020). Obtained from https://play.google.com/store/apps/details?id=com.zawor.spaceblock&hl=en&gl=US
 
-
-_TODO_
 
 ## The problem
 _TODO_
