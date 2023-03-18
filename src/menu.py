@@ -8,11 +8,11 @@ screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Space Block")
 
 # Set up the fonts
-font = pygame.font.Font("src/assets/fonts/PressStart2P-Regular.ttf", 24)
-title_font = pygame.font.Font("src/assets/fonts/PressStart2P-Regular.ttf", 48)
+font = pygame.font.Font("../src/assets/fonts/PressStart2P-Regular.ttf", 24)
+title_font = pygame.font.Font("../src/assets/fonts/PressStart2P-Regular.ttf", 48)
 
 # Load background image
-background = pygame.image.load("src/assets/images/background.jpg")
+background = pygame.image.load("../src/assets/images/background.jpg")
 
 # Set up menu options
 options = ["Start Game", "Options", "Quit Game"]

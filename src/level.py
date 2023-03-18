@@ -11,7 +11,7 @@ BLOCK_WIDTH = 50
 BLOCK_HEIGHT = 50
 
 # Open the file containing the map
-with open("src/maps/map01", "r") as f:
+with open("../src/maps/map01", "r") as f:
     # Read the map from the file
     map_data = [[int(num) for num in line.split()] for line in f]
 
@@ -30,7 +30,7 @@ screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Map Viewer")
 
 # Load the background image
-background = pygame.image.load("src/assets/images/background.jpg")
+background = pygame.image.load("../src/assets/images/background.jpg")
 
 # Calculate the margins needed to center the map
 left_margin = (size[0] - map_width * BLOCK_WIDTH) // 2
