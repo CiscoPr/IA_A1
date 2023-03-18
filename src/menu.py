@@ -8,15 +8,15 @@ screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Space Block")
 
 # Set up the fonts
-font = pygame.font.Font("../src/assets/fonts/PressStart2P-Regular.ttf", 24)
-title_font = pygame.font.Font("../src/assets/fonts/PressStart2P-Regular.ttf", 48)
+font = pygame.font.Font("src/assets/fonts/PressStart2P-Regular.ttf", 24)
+title_font = pygame.font.Font("src/assets/fonts/PressStart2P-Regular.ttf", 48)
 
 # Load background image
-background = pygame.image.load("../src/assets/images/background.jpg")
+background = pygame.image.load("src/assets/images/background.jpg")
 
 # Set up menu options
-options = ["Start Game", "Options", "Quit Game"]
-option_rects = []
+options = ["Start Game", "Instructions", "Quit Game"]
+
 
 # Set up pointer
 pointer_size = font.size("> ")[1]
@@ -29,8 +29,73 @@ is_selected = False
 title_surface = title_font.render("Space Block", True, (255, 255, 255))
 title_rect = title_surface.get_rect(center=(screen.get_width() // 2, 150))
 
+
+def mode_selector():
+    options = ["Player Mode", "AI Mode", "Return"]
+    option_rects = []
+
+    done2 = False
+    selected_option = 0
+
+    while not done2:
+
+        title_surface = title_font.render("Play Game", True, (255,255,255))
+        title_rect = title_surface.get_rect(center=(screen.get_width() // 2, 150))
+        # Handle events
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                done = True
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    selected_option -= 1
+                    if selected_option < 0:
+                        selected_option = len(options) - 1
+                elif event.key == pygame.K_DOWN:
+                    selected_option += 1
+                    if selected_option >= len(options):
+                        selected_option = 0
+                elif event.key == pygame.K_RETURN:
+                    is_selected = True
+                    if options[selected_option] == "Return":
+                        done2 = True
+                    print("Selected option:", options[selected_option])
+
+
+
+        # Clear the screen
+        screen.blit(background, (0, 0))
+        # Draw title
+        screen.blit(title_surface, title_rect)
+
+        for i, option in enumerate(options):
+            option_surface = font.render(option, True, (255, 255, 255))
+            option_rect = option_surface.get_rect(center=(screen.get_width() // 2, 300 + i * 50))
+            option_rects.append(option_rect)
+            screen.blit(option_surface, option_rect)
+
+            # Check if Enter button is pressed and change pointer size
+        if pygame.key.get_pressed()[pygame.K_RETURN]:
+            pointer_size = font.size("> ")[1] + 10
+        else:
+            pointer_size = font.size("> ")[1]
+        # Draw pointer
+        pointer_rect = pygame.Rect(pointer_x, option_rects[selected_option].centery - pointer_size // 2, pointer_size, pointer_size)
+
+        pygame.draw.rect(screen, (255, 255, 255), pointer_rect)
+        #if is_selected:
+        #    pygame.draw.rect(screen, (255, 255, 255), pointer_rect)
+        #else:
+
+
+        # Flip the display
+        pygame.display.flip()
+
+        # Wait for a bit to control the animation speed
+        pygame.time.wait(20)
+
 # Loop until the user clicks the close button.
 done = False
+
 
 # Main game loop
 while not done:
@@ -49,6 +114,12 @@ while not done:
                     selected_option = 0
             elif event.key == pygame.K_RETURN:
                 is_selected = True
+                if options[selected_option] == "Start Game":
+                    mode_selector()
+                #elif options[selected_option] == "Instructions":
+
+                elif options[selected_option] == "Quit Game":
+                    done = True
                 print("Selected option:", options[selected_option])
 
     # Clear the screen
