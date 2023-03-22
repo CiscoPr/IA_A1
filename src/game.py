@@ -3,7 +3,7 @@ from enum import Enum
 from dataclasses import dataclass
 from collections import deque
 
-filepath = "../src/maps/map01"
+
 
 def position_is_0(board, position):
     return board[position[1][position[0]]] == "0"
@@ -41,7 +41,7 @@ class GameState:
 
     def __init__(self, filepath):
         self.board: list(list(int)) = []
-        self.piece: Piece = Piece((0,0), PieceState.UP)
+        self.piece: Piece = Piece((0,0), PieceState.UP,1)
         with open(filepath) as f:
             lines = f.read().splitlines()
             for (y, line) in enumerate(lines):
@@ -172,8 +172,3 @@ def execute_move(State: GameState, Move: MoveDirection):
     return State 
 
 
-        
-
-myGameState = GameState(filepath)
-myGameState.MoveDown()
-print(myGameState.piece.position)

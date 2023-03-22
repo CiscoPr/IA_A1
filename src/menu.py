@@ -1,6 +1,7 @@
 import pygame
 import os
 from level import *
+from game import *
 pygame.init()
 
 # Set up the window
@@ -72,7 +73,10 @@ def level_selector():
                     if options[selected_option] == "Return":
                         done3 = True
                     else:
-                        map_generator(selected_option + 1)
+                        filepath = "../src/maps/map{0}".format(selected_option+1)
+                        gamestate = GameState(filepath)
+                        game_display(gamestate, screen, size)
+
                     print("Selected option:", options[selected_option])
 
 
