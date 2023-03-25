@@ -7,7 +7,7 @@ from collections import deque
 
 
 def position_is_0(board, position):
-    return board[position[1][position[0]]] == "0"
+    return board[position[1]][position[0]] == "0"
 
 class PieceState(Enum):
     UP = 1
@@ -35,7 +35,7 @@ class TreeNode:
 
     def add_child(self, child_node):
         self.children.append(child_node)
-        child_node.parent = self        
+        child_node.parent = self
 
 
 class GameState:
@@ -49,7 +49,7 @@ class GameState:
                 current_row = []
                 #print("Splitted line = " + str(line.split(' ')))
                 for (x, char) in enumerate(line.split(' ')):
-                    if (char == '3'):
+                    if (char == '2'):
                         #print(f"Found 3: x is {x} and y is {y}")
                         self.piece.position = (x, y)
                         current_row.append(1)
@@ -60,7 +60,7 @@ class GameState:
         #print("Finished initializing GameState.")
         #print("Board = " + str(self.board))
         #print("Piece = " + str(self.piece))
-    
+
 
     def MoveUp(self):
         if self.piece.piece_state == PieceState.VERTICAL:
@@ -69,7 +69,7 @@ class GameState:
             self.piece = Piece((self.piece.position[0],self.piece.position[1]-1), PieceState.HORIZONTAL, self.piece.height)
         elif self.piece.piece_state == PieceState.UP:
             self.piece = Piece((self.piece.position[0],self.piece.position[1]-self.piece.height), PieceState.VERTICAL, self.piece.height)
-       
+
     def MoveDown(self):
         if self.piece.piece_state == PieceState.VERTICAL:
             self.piece = Piece((self.piece.position[0],self.piece.position[1]+self.piece.height), PieceState.UP, self.piece.height)
@@ -77,7 +77,7 @@ class GameState:
             self.piece = Piece((self.piece.position[0],self.piece.position[1]+1), PieceState.HORIZONTAL, self.piece.height)
         elif self.piece.piece_state == PieceState.UP:
             self.piece = Piece((self.piece.position[0],self.piece.position[1]+1), PieceState.VERTICAL, self.piece.height)
-        
+
     def MoveLeft(self):
         if self.piece.piece_state == PieceState.VERTICAL:
             self.piece = Piece ((self.piece.position[0]-1,self.piece.position[1]), PieceState.VERTICAL, self.piece.height)
@@ -85,7 +85,7 @@ class GameState:
             self.piece = Piece ((self.piece.position[0]-1,self.piece.position[1]), PieceState.UP, self.piece.height)
         elif self.piece.piece_state == PieceState.UP:
             self.piece = Piece ((self.piece.position[0]-self.piece.height,self.piece.position[1]), PieceState.HORIZONTAL, self.piece.height)
-        
+
     def MoveRight(self):
         print("HI")
         if self.piece.piece_state == PieceState.VERTICAL:
@@ -94,11 +94,12 @@ class GameState:
             self.piece = Piece ((self.piece.position[0]+self.piece.height,self.piece.position[1]), PieceState.UP, self.piece.height)
         elif self.piece.piece_state == PieceState.UP:
             self.piece = Piece ((self.piece.position[0]+1,self.piece.position[1]), PieceState.HORIZONTAL, self.piece.height)
-    
+
     def Victory(self):
-        if self.piece.piece_state == PieceState.UP and self.board[self.piece.position[1]][self.piece.piece_state[0]] == "2":
+
+        if self.piece.piece_state == PieceState.UP and self.board[self.piece.position[1]][self.piece.position[0]] == 3:
             return True
-        else: 
+        else:
             return False
 
     def Defeat(self):
@@ -129,16 +130,16 @@ def breadth_first_search(initial_state, goal_state_func, operators_func):
         node = queue.popleft()   # get first element in the queue
         if goal_state_func(node.state):   # check goal state
             return node
-        
+
         for state in operators_func(node.state):   # go through next states
             visited.add(node.state)
             # create tree node with the new state
             newChild = TreeNode(state=state)
-            
+
             # link child node to its parent in the tree
             if newChild not in visited:
               node.add_child(newChild)
-              queue.append(newChild)            
+              queue.append(newChild)
     return None
 
 def depth_first_search(initial_state, goal_state_func, operators_func):
@@ -151,15 +152,15 @@ def depth_first_search(initial_state, goal_state_func, operators_func):
         visited.add(node.state)
         if goal_state_func(node.state):   # check goal state
             return node
-        
+
         for state in operators_func(node.state):   # go through next states
             # create tree node with the new state
             newChild = TreeNode(state=state)
-            
+
             # link child node to its parent in the tree
             if state not in visited:
               node.add_child(newChild)
-              queue.appendleft(newChild)            
+              queue.appendleft(newChild)
     return None
 
 def execute_move(State: GameState, Move: MoveDirection):
@@ -171,6 +172,4 @@ def execute_move(State: GameState, Move: MoveDirection):
         State.MoveDown()
     else:
         State.MoveLeft()
-    return State 
-
-
+    return State

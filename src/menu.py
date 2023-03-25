@@ -142,7 +142,6 @@ def mode_selector():
                     if selected_option >= len(options):
                         selected_option = 0
                 elif event.key == pygame.K_RETURN:
-                    is_selected = True
                     if options[selected_option] == "Return":
                         done2 = True
                     elif options[selected_option] == "Player Mode":

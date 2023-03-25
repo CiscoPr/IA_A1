@@ -3,10 +3,16 @@ from game import *
 
 
 def game_loop( gamestate,screen, size):
+    running = True
     while True:
         game_display(gamestate, screen, size )
         game_move(gamestate)
-
+        if gamestate.Victory():
+            display_endgame(screen, 0)
+            running = False
+        elif gamestate.Defeat():
+            display_endgame(screen, 1)
+            running = False
 # Define some colors
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
@@ -40,10 +46,8 @@ def game_display(gamestate, screen, size):
         for col in range(map_width):
             if gamestate.board[row][col] == 0:
                 continue
-            elif gamestate.board[row][col] == 1:
+            elif gamestate.board[row][col] == 1 or gamestate.board[row][col] == 2:
                 color = BLUE
-            elif gamestate.board[row][col] == 2:
-                color = RED
             elif gamestate.board[row][col] == 3:
                 color = GREEN
 
@@ -73,9 +77,9 @@ def game_display(gamestate, screen, size):
 
 # Clean up Pygame
 #pygame.quit()
-    
+
 def game_move(gamestate):
-    
+
     done = False
     # Handle events
     while not done:
@@ -96,3 +100,14 @@ def game_move(gamestate):
                 elif event.key == pygame.K_DOWN:
                     gamestate.MoveDown()
                     done = True
+
+def display_endgame(screen, w_or_l):
+    print(w_or_l)
+    if w_or_l == 0:
+        pygame.display.set_caption("You win")
+        endscreen = pygame.image.load("../src/assets/images/you_win.jpg")
+    else:
+        pygame.display.set_caption("You lose")
+        endscreen = pygame.image.load("../src/assets/images/game_over.jpg")
+    screen.blit(endscreen, (0, 0))
+    pygame.display.flip()
