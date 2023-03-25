@@ -5,6 +5,7 @@ from collections import deque
 
 
 
+
 def position_is_0(board, position):
     return board[position[1][position[0]]] == "0"
 
@@ -41,7 +42,7 @@ class GameState:
 
     def __init__(self, filepath):
         self.board: list(list(int)) = []
-        self.piece: Piece = Piece((0,0), PieceState.UP,1)
+        self.piece: Piece = Piece((0,0), PieceState.UP,2)
         with open(filepath) as f:
             lines = f.read().splitlines()
             for (y, line) in enumerate(lines):
@@ -63,35 +64,36 @@ class GameState:
 
     def MoveUp(self):
         if self.piece.piece_state == PieceState.VERTICAL:
-            self.piece = Piece((self.piece.position[0],self.piece.position[1]-1), PieceState.UP)
+            self.piece = Piece((self.piece.position[0],self.piece.position[1]-1), PieceState.UP, self.piece.height)
         elif self.piece.piece_state == PieceState.HORIZONTAL:
-            self.piece = Piece((self.piece.position[0],self.piece.position[1]-1), PieceState.HORIZONTAL)
+            self.piece = Piece((self.piece.position[0],self.piece.position[1]-1), PieceState.HORIZONTAL, self.piece.height)
         elif self.piece.piece_state == PieceState.UP:
-            self.piece = Piece((self.piece.position[0],self.piece.position[1]-self.piece.height), PieceState.VERTICAL)
+            self.piece = Piece((self.piece.position[0],self.piece.position[1]-self.piece.height), PieceState.VERTICAL, self.piece.height)
        
     def MoveDown(self):
         if self.piece.piece_state == PieceState.VERTICAL:
-            self.piece = Piece((self.piece.position[0],self.piece.position[1]+self.piece.height), PieceState.UP)
+            self.piece = Piece((self.piece.position[0],self.piece.position[1]+self.piece.height), PieceState.UP, self.piece.height)
         elif self.piece.piece_state == PieceState.HORIZONTAL:
-            self.piece = Piece((self.piece.position[0],self.piece.position[1]+1), PieceState.HORIZONTAL)
+            self.piece = Piece((self.piece.position[0],self.piece.position[1]+1), PieceState.HORIZONTAL, self.piece.height)
         elif self.piece.piece_state == PieceState.UP:
-            self.piece = Piece((self.piece.position[0],self.piece.position[1]+1), PieceState.VERTICAL)
+            self.piece = Piece((self.piece.position[0],self.piece.position[1]+1), PieceState.VERTICAL, self.piece.height)
         
     def MoveLeft(self):
         if self.piece.piece_state == PieceState.VERTICAL:
-            self.piece = Piece ((self.piece.position[0]-1,self.piece.position[1]), PieceState.VERTICAL)
+            self.piece = Piece ((self.piece.position[0]-1,self.piece.position[1]), PieceState.VERTICAL, self.piece.height)
         elif self.piece.piece_state == PieceState.HORIZONTAL:
-            self.piece = Piece ((self.piece.position[0]-1,self.piece.position[1]), PieceState.UP)
+            self.piece = Piece ((self.piece.position[0]-1,self.piece.position[1]), PieceState.UP, self.piece.height)
         elif self.piece.piece_state == PieceState.UP:
-            self.piece = Piece ((self.piece.position[0]-self.piece.height,self.piece.position[1]), PieceState.HORIZONTAL)
+            self.piece = Piece ((self.piece.position[0]-self.piece.height,self.piece.position[1]), PieceState.HORIZONTAL, self.piece.height)
         
     def MoveRight(self):
+        print("HI")
         if self.piece.piece_state == PieceState.VERTICAL:
-            self.piece = Piece ((self.piece.position[0]+1,self.piece.position[1]), PieceState.VERTICAL)
+            self.piece = Piece ((self.piece.position[0]+1,self.piece.position[1]), PieceState.VERTICAL, self.piece.height)
         elif self.piece.piece_state == PieceState.HORIZONTAL:
-            self.piece = Piece ((self.piece.position[0]+self.piece.height,self.piece.position[1]), PieceState.UP)
+            self.piece = Piece ((self.piece.position[0]+self.piece.height,self.piece.position[1]), PieceState.UP, self.piece.height)
         elif self.piece.piece_state == PieceState.UP:
-            self.piece = Piece ((self.piece.position[0]+1,self.piece.position[1]), PieceState.Horizontal)
+            self.piece = Piece ((self.piece.position[0]+1,self.piece.position[1]), PieceState.HORIZONTAL, self.piece.height)
     
     def Victory(self):
         if self.piece.piece_state == PieceState.UP and self.board[self.piece.position[1]][self.piece.piece_state[0]] == "2":

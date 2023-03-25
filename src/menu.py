@@ -1,8 +1,10 @@
 import pygame
 import os
 from level import *
-from game import *
 pygame.init()
+
+
+
 
 # Set up the window
 size = (800, 600)
@@ -75,7 +77,7 @@ def level_selector():
                     else:
                         filepath = "../src/maps/map{0}".format(selected_option+1)
                         gamestate = GameState(filepath)
-                        game_display(gamestate, screen, size)
+                        game_loop(gamestate, screen, size)
 
                     print("Selected option:", options[selected_option])
 

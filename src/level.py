@@ -1,5 +1,11 @@
 import pygame
+from game import *
 
+
+def game_loop( gamestate,screen, size):
+    while True:
+        game_display(gamestate, screen, size )
+        game_move(gamestate)
 
 # Define some colors
 BLACK = (0, 0, 0)
@@ -12,9 +18,8 @@ BLOCK_WIDTH = 50
 BLOCK_HEIGHT = 50
 
 
-
 def game_display(gamestate, screen, size):
-    
+    print("HASDAI")
     # Determine the dimensions of the map
     map_width = len(gamestate.board[0])
     map_height = len(gamestate.board)
@@ -49,36 +54,45 @@ def game_display(gamestate, screen, size):
                 # Draw the block
             pygame.draw.rect(screen, color, [x, y, BLOCK_WIDTH, BLOCK_HEIGHT])
 
+    x = gamestate.piece.position[0]* BLOCK_WIDTH + left_margin
+    y = gamestate.piece.position[1]* BLOCK_HEIGHT + top_margin
+    print(gamestate.piece.piece_state)
+    if gamestate.piece.piece_state == PieceState.UP:
+        pygame.draw.rect(screen, RED, [x, y, BLOCK_WIDTH, BLOCK_HEIGHT])
+    elif gamestate.piece.piece_state == PieceState.VERTICAL:
+        pygame.draw.rect(screen, RED, [x, y, BLOCK_WIDTH, BLOCK_HEIGHT])
+        pygame.draw.rect(screen, RED, [x, y+BLOCK_HEIGHT, BLOCK_WIDTH, BLOCK_HEIGHT])
+
+    elif gamestate.piece.piece_state == PieceState.HORIZONTAL:
+        pygame.draw.rect(screen, RED, [x, y, BLOCK_WIDTH, BLOCK_HEIGHT])
+        pygame.draw.rect(screen, RED, [x+BLOCK_WIDTH, y, BLOCK_WIDTH, BLOCK_HEIGHT])
+
+    # Draw Piece
         # Update the screen
-        pygame.display.flip()
+    pygame.display.flip()
 
 # Clean up Pygame
 #pygame.quit()
     
+def game_move(gamestate):
     
-    
-    
-    
-    
-    
-    # Loop until the user clicks the close button
-    #done = False
-#
-    ## Main game loop
-    #while not done:
-#
-    #    # Handle events
-    #    for event in pygame.event.get():
-    #        if event.type == pygame.QUIT:
+    done = False
+    # Handle events
+    while not done:
+        for event in pygame.event.get():
+    #        zif event.type == pygame.QUIT:
     #            done = True
-#
-    #        # Handle arrow key presses to move the red block
-    #        elif event.type == pygame.KEYDOWN:
-    #            if event.key == pygame.K_LEFT and red_block_pos[1] > 0:
-    #                red_block_pos[1] -= 1
-    #            elif event.key == pygame.K_RIGHT and red_block_pos[1] < map_width - 1:
-    #                red_block_pos[1] += 1
-    #            elif event.key == pygame.K_UP and red_block_pos[0] > 0:
-    #                red_block_pos[0] -= 1
-    #            elif event.key == pygame.K_DOWN and red_block_pos[0] < map_height - 1:
-    #                red_block_pos[0] += 1
+    # Handle arrow key presses to move the red block
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    gamestate.MoveLeft()
+                    done = True
+                elif event.key == pygame.K_RIGHT:
+                    gamestate.MoveRight()
+                    done = True
+                elif event.key == pygame.K_UP:
+                    gamestate.MoveUp()
+                    done = True
+                elif event.key == pygame.K_DOWN:
+                    gamestate.MoveDown()
+                    done = True
