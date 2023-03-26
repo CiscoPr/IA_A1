@@ -1,18 +1,22 @@
 import pygame
+import time
 from game import *
 
 
 def game_loop( gamestate,screen, size):
-    running = True
+
     while True:
         game_display(gamestate, screen, size )
         game_move(gamestate)
         if gamestate.Victory():
             display_endgame(screen, 0)
-            running = False
+            time.sleep(3)
+            break
         elif gamestate.Defeat():
             display_endgame(screen, 1)
-            running = False
+            time.sleep(3)
+            break
+
 # Define some colors
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
@@ -105,9 +109,10 @@ def display_endgame(screen, w_or_l):
     print(w_or_l)
     if w_or_l == 0:
         pygame.display.set_caption("You win")
-        endscreen = pygame.image.load("../src/assets/images/you_win.jpg")
+        endscreen = pygame.image.load("../src/assets/images/you_win.png")
     else:
         pygame.display.set_caption("You lose")
-        endscreen = pygame.image.load("../src/assets/images/game_over.jpg")
+        endscreen = pygame.image.load("../src/assets/images/game_over.png")
     screen.blit(endscreen, (0, 0))
     pygame.display.flip()
+
