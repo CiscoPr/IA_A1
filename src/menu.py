@@ -45,7 +45,8 @@ def level_selector(title_font, screen, size, background, font, pointer_x):
                         done3 = True
                     else:
                         filepath = "../src/maps/map{0}".format(selected_option+1)
-                        gamestate = GameState(filepath)
+                        gamestate = start_game(filepath)
+                        print(str(gamestate.board))
                         game_loop(gamestate, screen, size)
 
                     print("Selected option:", options[selected_option])
