@@ -2,6 +2,7 @@ import pygame
 import os
 from level import *
 from instructions import *
+from ia_selection import *
 
 def level_selector(title_font, screen, size, background, font, pointer_x, mode):
     number_of_levels = 0
@@ -116,7 +117,8 @@ def mode_selector(title_font, size, screen, font, pointer_x, background):
                     elif options[selected_option] == "Player Mode":
                         level_selector(title_font, screen, size, background, font, pointer_x, False)
                     elif options[selected_option] == "AI Mode":
-                        level_selector(title_font, screen, size, background, font, pointer_x, True)       # probably gonna change this for
+                        ai_select(title_font, screen, font, pointer_x, background)
+                        #level_selector(title_font, screen, size, background, font, pointer_x, True)       # probably gonna change this for
                                                                                                     # AI mode
                     print("Selected option:", options[selected_option])
 
