@@ -40,80 +40,86 @@ class TreeNode:
 
 class GameState:
 
-    def __init__(self, filepath):
-        self.board: list(list(int)) = []
-        self.piece: Piece = Piece((0,0), PieceState.UP,2)
-        with open(filepath) as f:
-            lines = f.read().splitlines()
-            for (y, line) in enumerate(lines):
-                current_row = []
-                #print("Splitted line = " + str(line.split(' ')))
-                for (x, char) in enumerate(line.split(' ')):
-                    if (char == '2'):
-                        #print(f"Found 3: x is {x} and y is {y}")
-                        self.piece.position = (x, y)
-                        current_row.append(1)
-                        continue
-                    current_row.append(int(char))
-                self.board.append(current_row)
+    def __init__(self, board, piece):
+        self.board = board
+        self.piece = piece
+        
 
-        #print("Finished initializing GameState.")
-        #print("Board = " + str(self.board))
-        #print("Piece = " + str(self.piece))
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.__dict__ == other.__dict__
+        else:
+            return False
 
 
-    def MoveUp(self):
-        if self.piece.piece_state == PieceState.VERTICAL:
-            self.piece = Piece((self.piece.position[0],self.piece.position[1]-1), PieceState.UP, self.piece.height)
-        elif self.piece.piece_state == PieceState.HORIZONTAL:
-            self.piece = Piece((self.piece.position[0],self.piece.position[1]-1), PieceState.HORIZONTAL, self.piece.height)
-        elif self.piece.piece_state == PieceState.UP:
-            self.piece = Piece((self.piece.position[0],self.piece.position[1]-self.piece.height), PieceState.VERTICAL, self.piece.height)
+def MoveUp(gamestate):
+        if gamestate.piece.piece_state == PieceState.VERTICAL:
+            piece = Piece((gamestate.piece.position[0],gamestate.piece.position[1]-1), PieceState.UP, gamestate.piece.height)
+            return GameState(gamestate.board, piece)
+        elif gamestate.piece.piece_state == PieceState.HORIZONTAL:
+            piece = Piece((gamestate.piece.position[0],gamestate.piece.position[1]-1), PieceState.HORIZONTAL, gamestate.piece.height)
+            return GameState(gamestate.board, piece)
+        elif gamestate.piece.piece_state == PieceState.UP:
+            piece = Piece((gamestate.piece.position[0],gamestate.piece.position[1]-gamestate.piece.height), PieceState.VERTICAL, gamestate.piece.height)
+            return GameState(gamestate.board, piece)
+        return None
 
-    def MoveDown(self):
-        if self.piece.piece_state == PieceState.VERTICAL:
-            self.piece = Piece((self.piece.position[0],self.piece.position[1]+self.piece.height), PieceState.UP, self.piece.height)
-        elif self.piece.piece_state == PieceState.HORIZONTAL:
-            self.piece = Piece((self.piece.position[0],self.piece.position[1]+1), PieceState.HORIZONTAL, self.piece.height)
-        elif self.piece.piece_state == PieceState.UP:
-            self.piece = Piece((self.piece.position[0],self.piece.position[1]+1), PieceState.VERTICAL, self.piece.height)
+def MoveDown(gamestate):
+        if gamestate.piece.piece_state == PieceState.VERTICAL:
+            piece = Piece((gamestate.piece.position[0],gamestate.piece.position[1]+gamestate.piece.height), PieceState.UP, gamestate.piece.height)
+            return GameState(gamestate.board, piece)
+        elif gamestate.piece.piece_state == PieceState.HORIZONTAL:
+            piece = Piece((gamestate.piece.position[0],gamestate.piece.position[1]+1), PieceState.HORIZONTAL, gamestate.piece.height)
+            return GameState(gamestate.board, piece)
+        elif gamestate.piece.piece_state == PieceState.UP:
+            piece = Piece((gamestate.piece.position[0],gamestate.piece.position[1]+1), PieceState.VERTICAL, gamestate.piece.height)
+            return GameState(gamestate.board, piece)
+        return None
 
-    def MoveLeft(self):
-        if self.piece.piece_state == PieceState.VERTICAL:
-            self.piece = Piece ((self.piece.position[0]-1,self.piece.position[1]), PieceState.VERTICAL, self.piece.height)
-        elif self.piece.piece_state == PieceState.HORIZONTAL:
-            self.piece = Piece ((self.piece.position[0]-1,self.piece.position[1]), PieceState.UP, self.piece.height)
-        elif self.piece.piece_state == PieceState.UP:
-            self.piece = Piece ((self.piece.position[0]-self.piece.height,self.piece.position[1]), PieceState.HORIZONTAL, self.piece.height)
+def MoveLeft(gamestate):
+        if gamestate.piece.piece_state == PieceState.VERTICAL:
+            piece = Piece ((gamestate.piece.position[0]-1,gamestate.piece.position[1]), PieceState.VERTICAL, gamestate.piece.height)
+            return GameState(gamestate.board, piece)
+        elif gamestate.piece.piece_state == PieceState.HORIZONTAL:
+            piece = Piece ((gamestate.piece.position[0]-1,gamestate.piece.position[1]), PieceState.UP, gamestate.piece.height)
+            return GameState(gamestate.board, piece)
+        elif gamestate.piece.piece_state == PieceState.UP:
+            piece = Piece ((gamestate.piece.position[0]-gamestate.piece.height,gamestate.piece.position[1]), PieceState.HORIZONTAL, gamestate.piece.height)
+            return GameState(gamestate.board, piece)
+        return None
 
-    def MoveRight(self):
-        print("HI")
-        if self.piece.piece_state == PieceState.VERTICAL:
-            self.piece = Piece ((self.piece.position[0]+1,self.piece.position[1]), PieceState.VERTICAL, self.piece.height)
-        elif self.piece.piece_state == PieceState.HORIZONTAL:
-            self.piece = Piece ((self.piece.position[0]+self.piece.height,self.piece.position[1]), PieceState.UP, self.piece.height)
-        elif self.piece.piece_state == PieceState.UP:
-            self.piece = Piece ((self.piece.position[0]+1,self.piece.position[1]), PieceState.HORIZONTAL, self.piece.height)
+def MoveRight(gamestate):
+        if gamestate.piece.piece_state == PieceState.VERTICAL:
+            piece = Piece ((gamestate.piece.position[0]+1,gamestate.piece.position[1]), PieceState.VERTICAL, gamestate.piece.height)
+            return GameState(gamestate.board, piece)
+        elif gamestate.piece.piece_state == PieceState.HORIZONTAL:
+            piece = Piece ((gamestate.piece.position[0]+gamestate.piece.height,gamestate.piece.position[1]), PieceState.UP, gamestate.piece.height)
+            return GameState(gamestate.board, piece)
+        elif gamestate.piece.piece_state == PieceState.UP:
+            piece = Piece((gamestate.piece.position[0]+1,gamestate.piece.position[1]), PieceState.HORIZONTAL, gamestate.piece.height)
+            return GameState(gamestate.board, piece)
 
-    def Victory(self):
+def Victory(gamestate):
 
-        if self.piece.piece_state == PieceState.UP and self.board[self.piece.position[1]][self.piece.position[0]] == 3:
+        if gamestate.piece.piece_state == PieceState.UP and gamestate.board[gamestate.piece.position[1]][gamestate.piece.position[0]] == 3:
             return True
         else:
             return False
 
-    def Defeat(self):
-        head_position = self.piece.position
+
+def Defeat(gamestate):
+        head_position = gamestate.piece.position
         tail_position = (0,0)
 
-        if self.piece.piece_state == PieceState.UP:
-            tail_position = self.piece.position
-        elif self.piece.piece_state == PieceState.HORIZONTAL:
-            tail_position = (self.piece.position[0] + self.piece.height - 1, self.piece.position[1])
+        if gamestate.piece.piece_state == PieceState.UP:
+            tail_position = gamestate.piece.position
+        elif gamestate.piece.piece_state == PieceState.HORIZONTAL:
+            tail_position = (gamestate.piece.position[0] + gamestate.piece.height - 1, gamestate.piece.position[1])
         else:
-            tail_position = (self.piece.position[0], self.piece.position[1] + self.piece.height - 1)
-
-        if position_is_0(self.board, head_position) or position_is_0(self.board, tail_position):
+            tail_position = (gamestate.piece.position[0], gamestate.piece.position[1] + gamestate.piece.height - 1)
+        print (head_position)
+        print (tail_position)
+        if position_is_0(gamestate.board, head_position) or position_is_0(gamestate.board, tail_position):
             return True
         else:
             return False
@@ -165,11 +171,19 @@ def depth_first_search(initial_state, goal_state_func, operators_func):
 
 def execute_move(State: GameState, Move: MoveDirection):
     if (Move == MoveDirection.UP):
-        State.MoveUp()
+        State = MoveUp(State)
     elif (Move == MoveDirection.RIGHT):
-        State.MoveRight()
+        State = MoveRight(State)
     elif (Move == MoveDirection.DOWN):
-        State.MoveDown()
+        State = MoveDown(State)
     else:
-        State.MoveLeft()
+        State = MoveLeft(State)
     return State
+
+
+def child_gamestates(state):
+    new_states = []
+    if(not state.MoveUp.Defeat):
+        new_states.append()
+
+

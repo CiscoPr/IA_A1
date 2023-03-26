@@ -7,12 +7,12 @@ def game_loop( gamestate,screen, size):
 
     while True:
         game_display(gamestate, screen, size )
-        game_move(gamestate)
-        if gamestate.Victory():
+        gamestate = game_move(gamestate)
+        if Victory(gamestate):
             display_endgame(screen, 0)
             time.sleep(3)
             break
-        elif gamestate.Defeat():
+        elif Defeat(gamestate):
             display_endgame(screen, 1)
             time.sleep(3)
             break
@@ -29,7 +29,6 @@ BLOCK_HEIGHT = 50
 
 
 def game_display(gamestate, screen, size):
-    print("HASDAI")
     # Determine the dimensions of the map
     map_width = len(gamestate.board[0])
     map_height = len(gamestate.board)
@@ -76,7 +75,6 @@ def game_display(gamestate, screen, size):
 
     x = gamestate.piece.position[0]* BLOCK_WIDTH + left_margin
     y = gamestate.piece.position[1]* BLOCK_HEIGHT + top_margin
-    print(gamestate.piece.piece_state)
     if gamestate.piece.piece_state == PieceState.UP:
         screen.blit(player_blockh1, (x, y))
     elif gamestate.piece.piece_state == PieceState.VERTICAL:
@@ -104,17 +102,18 @@ def game_move(gamestate):
     # Handle arrow key presses to move the red block
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    gamestate.MoveLeft()
+                    gamestate= execute_move(gamestate, MoveDirection.LEFT)
                     done = True
                 elif event.key == pygame.K_RIGHT:
-                    gamestate.MoveRight()
+                    gamestate = execute_move(gamestate, MoveDirection.RIGHT)
                     done = True
                 elif event.key == pygame.K_UP:
-                    gamestate.MoveUp()
+                    gamestate = execute_move(gamestate, MoveDirection.UP)
                     done = True
                 elif event.key == pygame.K_DOWN:
-                    gamestate.MoveDown()
+                    gamestate = execute_move(gamestate, MoveDirection.DOWN)
                     done = True
+    return gamestate
 
 def display_endgame(screen, w_or_l):
     print(w_or_l)
@@ -125,3 +124,19 @@ def display_endgame(screen, w_or_l):
     screen.blit(endscreen, (0, 0))
     pygame.display.flip()
 
+
+def start_game(filepath):
+    board: list(list(int)) = []
+    piece: Piece = Piece((0,0), PieceState.UP,2)
+    with open(filepath) as f:
+        lines = f.read().splitlines()
+        for (y, line) in enumerate(lines):
+            current_row = []
+            for (x, char) in enumerate(line.split(' ')):
+                if (char == '2'):
+                    piece.position = (x, y)
+                    current_row.append(1)
+                    continue
+                current_row.append(int(char))
+            board.append(current_row)
+    return GameState(board, piece)
