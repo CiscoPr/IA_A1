@@ -1,7 +1,7 @@
 import pygame
 import os
 from level import *
-
+from instructions import *
 
 def level_selector(title_font, screen, size, background, font, pointer_x, mode):
     number_of_levels = 0
@@ -210,8 +210,8 @@ def main_menu():
                     is_selected = True
                     if options[selected_option] == "Start Game":
                         mode_selector(title_font, size, screen, font, pointer_x, background)
-                    #elif options[selected_option] == "Instructions":
-
+                    elif options[selected_option] == "Instructions":
+                        display_instructions(screen, background)
                     elif options[selected_option] == "Quit Game":
                         done = True
                     print("Selected option:", options[selected_option])
