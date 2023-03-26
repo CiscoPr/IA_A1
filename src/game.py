@@ -117,7 +117,8 @@ def Defeat(gamestate):
             tail_position = (gamestate.piece.position[0] + gamestate.piece.height - 1, gamestate.piece.position[1])
         else:
             tail_position = (gamestate.piece.position[0], gamestate.piece.position[1] + gamestate.piece.height - 1)
-
+        print (head_position)
+        print (tail_position)
         if position_is_0(gamestate.board, head_position) or position_is_0(gamestate.board, tail_position):
             return True
         else:
