@@ -116,7 +116,8 @@ def mode_selector(title_font, size, screen, font, pointer_x, background):
                     elif options[selected_option] == "Player Mode":
                         level_selector(title_font, screen, size, background, font, pointer_x)
                     elif options[selected_option] == "AI Mode":
-                        level_selector()
+                        level_selector(title_font, screen, size, background, font, pointer_x)       # probably gonna change this for
+                                                                                                    # AI mode
                     print("Selected option:", options[selected_option])
 
 

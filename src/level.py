@@ -59,7 +59,7 @@ def game_display(gamestate, screen, size):
             x = col * BLOCK_WIDTH + left_margin
             y = row * BLOCK_HEIGHT + top_margin
 
-                # Draw the block
+            # Draw the block
             pygame.draw.rect(screen, color, [x, y, BLOCK_WIDTH, BLOCK_HEIGHT])
 
     x = gamestate.piece.position[0]* BLOCK_WIDTH + left_margin
@@ -108,11 +108,9 @@ def game_move(gamestate):
 def display_endgame(screen, w_or_l):
     print(w_or_l)
     if w_or_l == 0:
-        pygame.display.set_caption("You win")
         endscreen = pygame.image.load("../src/assets/images/you_win.png")
     else:
-        pygame.display.set_caption("You lose")
-        endscreen = pygame.image.load("../src/assets/images/game_over.png")
+        endscreen = pygame.image.load("../src/assets/images/you_lose.png")
     screen.blit(endscreen, (0, 0))
     pygame.display.flip()
 

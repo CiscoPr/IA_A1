@@ -7,7 +7,7 @@ from collections import deque
 
 
 def position_is_0(board, position):
-    return board[position[1]][position[0]] == "0"
+    return board[position[1]][position[0]] == 0
 
 class PieceState(Enum):
     UP = 1
