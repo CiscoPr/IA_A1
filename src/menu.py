@@ -3,7 +3,7 @@ import os
 from level import *
 
 
-def level_selector(title_font, screen, size, background, font, pointer_x):
+def level_selector(title_font, screen, size, background, font, pointer_x, mode):
     number_of_levels = 0
     maps_folder = "../src/maps"
 
@@ -45,8 +45,7 @@ def level_selector(title_font, screen, size, background, font, pointer_x):
                         done3 = True
                     else:
                         filepath = "../src/maps/map{0}".format(selected_option+1)
-                        gamestate = start_game(filepath)
-                        print(str(gamestate.board))
+                        gamestate = start_game(filepath, mode)
                         game_loop(gamestate, screen, size)
 
                     print("Selected option:", options[selected_option])
@@ -115,9 +114,9 @@ def mode_selector(title_font, size, screen, font, pointer_x, background):
                     if options[selected_option] == "Return":
                         done2 = True
                     elif options[selected_option] == "Player Mode":
-                        level_selector(title_font, screen, size, background, font, pointer_x)
+                        level_selector(title_font, screen, size, background, font, pointer_x, False)
                     elif options[selected_option] == "AI Mode":
-                        level_selector(title_font, screen, size, background, font, pointer_x)       # probably gonna change this for
+                        level_selector(title_font, screen, size, background, font, pointer_x, True)       # probably gonna change this for
                                                                                                     # AI mode
                     print("Selected option:", options[selected_option])
 

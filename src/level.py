@@ -4,9 +4,8 @@ from game import *
 
 
 def game_loop( gamestate,screen, size):
-
     while True:
-        game_display(gamestate, screen, size )
+        game_display(gamestate, screen, size)
         gamestate = game_move(gamestate)
         if Victory(gamestate):
             display_endgame(screen, 0)
@@ -92,27 +91,30 @@ def game_display(gamestate, screen, size):
 #pygame.quit()
 
 def game_move(gamestate):
-
-    done = False
-    # Handle events
-    while not done:
-        for event in pygame.event.get():
-    #        zif event.type == pygame.QUIT:
-    #            done = True
-    # Handle arrow key presses to move the red block
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    gamestate= execute_move(gamestate, MoveDirection.LEFT)
-                    done = True
-                elif event.key == pygame.K_RIGHT:
-                    gamestate = execute_move(gamestate, MoveDirection.RIGHT)
-                    done = True
-                elif event.key == pygame.K_UP:
-                    gamestate = execute_move(gamestate, MoveDirection.UP)
-                    done = True
-                elif event.key == pygame.K_DOWN:
-                    gamestate = execute_move(gamestate, MoveDirection.DOWN)
-                    done = True
+    if gamestate.isAi:
+        next_move = gamestate.getAiMove()
+        gamestate = execute_move(gamestate, next_move)[0]
+    else:
+        done = False
+        # Handle events
+        while not done:
+            for event in pygame.event.get():
+        #        zif event.type == pygame.QUIT:
+        #            done = True
+        # Handle arrow key presses to move the red block
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_LEFT:
+                        gamestate= execute_move(gamestate, MoveDirection.LEFT)[0]
+                        done = True
+                    elif event.key == pygame.K_RIGHT:
+                        gamestate = execute_move(gamestate, MoveDirection.RIGHT)[0]
+                        done = True
+                    elif event.key == pygame.K_UP:
+                        gamestate = execute_move(gamestate, MoveDirection.UP)[0]
+                        done = True
+                    elif event.key == pygame.K_DOWN:
+                        gamestate = execute_move(gamestate, MoveDirection.DOWN)[0]
+                        done = True
     return gamestate
 
 def display_endgame(screen, w_or_l):
@@ -125,7 +127,7 @@ def display_endgame(screen, w_or_l):
     pygame.display.flip()
 
 
-def start_game(filepath):
+def start_game(filepath, isAi):
     board: list(list(int)) = []
     piece: Piece = Piece((0,0), PieceState.UP,2)
     with open(filepath) as f:
@@ -139,4 +141,8 @@ def start_game(filepath):
                     continue
                 current_row.append(int(char))
             board.append(current_row)
-    return GameState(board, piece)
+    if isAi:
+        initialGameState = GameState(board, piece, True)
+        initialGameState.setAiMoves()
+        return initialGameState
+    return GameState(board, piece, False)
