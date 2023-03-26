@@ -41,6 +41,19 @@ def game_display(gamestate, screen, size):
     left_margin = (size[0] - map_width * BLOCK_WIDTH) // 2
     top_margin = (size[1] - map_height * BLOCK_HEIGHT) // 2
 
+    # Horizontal display of cube
+    player_blockh1 = pygame.image.load("../src/assets/images/player_blockh1.png")
+    player_blockh2 = pygame.image.load("../src/assets/images/player_blockh2.png")
+
+    # Vertical display of cube
+    player_blockv1 = pygame.image.load("../src/assets/images/player_blockv1.png")
+    player_blockv2 = pygame.image.load("../src/assets/images/player_blockv2.png")
+
+    # Portal display
+    portal = pygame.image.load("../src/assets/images/end_portal.png")
+
+    # Path block display
+    path_block = pygame.image.load("../src/assets/images/path_block.png")
 
     # Blit the background image onto the screen
     screen.blit(background, (0, 0))
@@ -51,29 +64,27 @@ def game_display(gamestate, screen, size):
             if gamestate.board[row][col] == 0:
                 continue
             elif gamestate.board[row][col] == 1 or gamestate.board[row][col] == 2:
-                color = BLUE
+                x = col * BLOCK_WIDTH + left_margin
+                y = row * BLOCK_HEIGHT + top_margin
+                screen.blit(path_block, (x, y))
+
             elif gamestate.board[row][col] == 3:
-                color = GREEN
+                 x = col * BLOCK_WIDTH + left_margin
+                 y = row * BLOCK_HEIGHT + top_margin
+                 screen.blit(portal, (x, y))
 
-            # Calculate the position of the block
-            x = col * BLOCK_WIDTH + left_margin
-            y = row * BLOCK_HEIGHT + top_margin
-
-            # Draw the block
-            pygame.draw.rect(screen, color, [x, y, BLOCK_WIDTH, BLOCK_HEIGHT])
 
     x = gamestate.piece.position[0]* BLOCK_WIDTH + left_margin
     y = gamestate.piece.position[1]* BLOCK_HEIGHT + top_margin
     print(gamestate.piece.piece_state)
     if gamestate.piece.piece_state == PieceState.UP:
-        pygame.draw.rect(screen, RED, [x, y, BLOCK_WIDTH, BLOCK_HEIGHT])
+        screen.blit(player_blockh1, (x, y))
     elif gamestate.piece.piece_state == PieceState.VERTICAL:
-        pygame.draw.rect(screen, RED, [x, y, BLOCK_WIDTH, BLOCK_HEIGHT])
-        pygame.draw.rect(screen, RED, [x, y+BLOCK_HEIGHT, BLOCK_WIDTH, BLOCK_HEIGHT])
-
+         screen.blit(player_blockv1, (x, y))
+         screen.blit(player_blockv2, (x, y + BLOCK_HEIGHT))
     elif gamestate.piece.piece_state == PieceState.HORIZONTAL:
-        pygame.draw.rect(screen, RED, [x, y, BLOCK_WIDTH, BLOCK_HEIGHT])
-        pygame.draw.rect(screen, RED, [x+BLOCK_WIDTH, y, BLOCK_WIDTH, BLOCK_HEIGHT])
+         screen.blit(player_blockh1, (x, y))
+         screen.blit(player_blockh2, (x + BLOCK_WIDTH, y))
 
     # Draw Piece
         # Update the screen
