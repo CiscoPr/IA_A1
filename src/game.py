@@ -72,8 +72,8 @@ class GameState:
         if (self.aiLevel == 0):
             initial_node = breadth_first_search(self, Victory, child_gamestates)
             self.aiMoves = solution_moves(initial_node)
-        else:
-            initial_node = breadth_first_search(self, Victory, child_gamestates) #TODO add more modes
+        elif (self.aiLevel == 1):
+            initial_node = depth_first_search(self, Victory, child_gamestates) #TODO add more modes
             self.aiMoves = solution_moves(initial_node)
 
 
@@ -187,10 +187,9 @@ def depth_first_search(initial_state, goal_state_func, operators_func):
         if goal_state_func(node.state):   # check goal state
             return node
 
-        for state in operators_func(node.state):   # go through next states
+        for state, moveDir in operators_func(node.state):   # go through next states
             # create tree node with the new state
-            newChild = TreeNode(state=state)
-
+            newChild = TreeNode(state=state, parent=node.state, move=moveDir)
             # link child node to its parent in the tree
             if state not in visited:
               node.add_child(newChild)
@@ -199,16 +198,16 @@ def depth_first_search(initial_state, goal_state_func, operators_func):
 
 def execute_move(State: GameState, Move: MoveDirection):
     if (Move == MoveDirection.UP):
-        time.sleep(1)
+        time.sleep(0.2)
         return MoveUp(State), MoveDirection.UP 
     elif (Move == MoveDirection.RIGHT):
-        time.sleep(1)
+        time.sleep(0.2)
         return MoveRight(State), MoveDirection.RIGHT
     elif (Move == MoveDirection.DOWN):
-        time.sleep(1)
+        time.sleep(0.2)
         return MoveDown(State), MoveDirection.DOWN
     else:
-        time.sleep(1)
+        time.sleep(0.2)
         return MoveLeft(State), MoveDirection.LEFT
 
 

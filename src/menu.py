@@ -3,7 +3,7 @@ import os
 from level import *
 from instructions import *
 
-def level_selector(title_font, screen, size, background, font, pointer_x, mode):
+def level_selector(title_font, screen, size, background, font, pointer_x, isAi, mode = 0):
     number_of_levels = 0
     maps_folder = "../src/maps"
 
@@ -45,7 +45,10 @@ def level_selector(title_font, screen, size, background, font, pointer_x, mode):
                         done3 = True
                     else:
                         filepath = "../src/maps/map{0}".format(selected_option+1)
-                        gamestate = start_game(filepath, mode)
+                        if isAi:
+                            gamestate = start_game(filepath, True, mode)
+                        else: 
+                            gamestate = start_game(filepath, False)
                         game_loop(gamestate, screen, size)
 
                     print("Selected option:", options[selected_option])
@@ -113,13 +116,13 @@ def ai_select(title_font, screen, size, font, pointer_x, background):
                         done = True
                     elif options[selected_option] == "Beginner - BFS":      # TODO- add the AI mode
                         print("Beginner - BFS")
-                        level_selector(title_font, screen, size, background, font, pointer_x, True)
+                        level_selector(title_font, screen, size, background, font, pointer_x, True, 0)
                     elif options[selected_option] == "Beginner - DFS":      # TODO- add the AI mode
                         print("Beginner - DFS")
-                        level_selector(title_font, screen, size, background, font, pointer_x, True)
+                        level_selector(title_font, screen, size, background, font, pointer_x, True, 1)
                     elif options[selected_option] == "Expert - A*":         # TODO- add the AI mode
                         print("Expert - A*")
-                        level_selector(title_font, screen, size, background, font, pointer_x, True)
+                        level_selector(title_font, screen, size, background, font, pointer_x, True, 2)
                     print("Selected option:", options[selected_option])
 
         # Clear the screen

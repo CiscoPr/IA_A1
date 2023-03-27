@@ -127,7 +127,7 @@ def display_endgame(screen, w_or_l):
     pygame.display.flip()
 
 
-def start_game(filepath, isAi):
+def start_game(filepath, isAi, mode = 0):
     board: list(list(int)) = []
     piece: Piece = Piece((0,0), PieceState.UP,2)
     with open(filepath) as f:
@@ -142,7 +142,7 @@ def start_game(filepath, isAi):
                 current_row.append(int(char))
             board.append(current_row)
     if isAi:
-        initialGameState = GameState(board, piece, True)
+        initialGameState = GameState(board, piece, True, mode)
         initialGameState.setAiMoves()
         return initialGameState
     return GameState(board, piece, False)
