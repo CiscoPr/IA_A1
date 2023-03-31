@@ -93,27 +93,27 @@ def game_display(gamestate, screen, size):
 def game_move(gamestate):
     if gamestate.isAi:
         next_move = gamestate.getAiMove()
-        gamestate = execute_move(gamestate, next_move)[0]
+        gamestate = execute_move(gamestate, next_move, True)[0]
     else:
         done = False
         # Handle events
         while not done:
             for event in pygame.event.get():
-        #        zif event.type == pygame.QUIT:
+        #       if event.type == pygame.QUIT:
         #            done = True
         # Handle arrow key presses to move the red block
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_LEFT:
-                        gamestate= execute_move(gamestate, MoveDirection.LEFT)[0]
+                        gamestate= execute_move(gamestate, MoveDirection.LEFT, False)[0]
                         done = True
                     elif event.key == pygame.K_RIGHT:
-                        gamestate = execute_move(gamestate, MoveDirection.RIGHT)[0]
+                        gamestate = execute_move(gamestate, MoveDirection.RIGHT, False)[0]
                         done = True
                     elif event.key == pygame.K_UP:
-                        gamestate = execute_move(gamestate, MoveDirection.UP)[0]
+                        gamestate = execute_move(gamestate, MoveDirection.UP, False)[0]
                         done = True
                     elif event.key == pygame.K_DOWN:
-                        gamestate = execute_move(gamestate, MoveDirection.DOWN)[0]
+                        gamestate = execute_move(gamestate, MoveDirection.DOWN, False)[0]
                         done = True
     return gamestate
 

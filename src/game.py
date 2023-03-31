@@ -196,18 +196,22 @@ def depth_first_search(initial_state, goal_state_func, operators_func):
               queue.appendleft(newChild)
     return None
 
-def execute_move(State: GameState, Move: MoveDirection):
+def execute_move(State: GameState, Move: MoveDirection, isAi):
     if (Move == MoveDirection.UP):
-        time.sleep(0.2)
+        if(isAi):
+            time.sleep(0.2)
         return MoveUp(State), MoveDirection.UP 
     elif (Move == MoveDirection.RIGHT):
-        time.sleep(0.2)
+        if(isAi):
+            time.sleep(0.2)
         return MoveRight(State), MoveDirection.RIGHT
     elif (Move == MoveDirection.DOWN):
-        time.sleep(0.2)
+        if(isAi):
+            time.sleep(0.2)
         return MoveDown(State), MoveDirection.DOWN
     else:
-        time.sleep(0.2)
+        if(isAi):
+            time.sleep(0.2)
         return MoveLeft(State), MoveDirection.LEFT
 
 
