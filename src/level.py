@@ -7,7 +7,9 @@ def game_loop( gamestate,screen, size):
     while True:
         game_display(gamestate, screen, size)
         gamestate = game_move(gamestate)
-        if Victory(gamestate):
+        if gamestate == 0:
+            break
+        elif Victory(gamestate):
             display_endgame(screen, 0)
             time.sleep(3)
             break
@@ -99,10 +101,10 @@ def game_move(gamestate):
         # Handle events
         while not done:
             for event in pygame.event.get():
-        #       if event.type == pygame.QUIT:
-        #            done = True
         # Handle arrow key presses to move the red block
                 if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        return 0
                     if event.key == pygame.K_LEFT:
                         gamestate= execute_move(gamestate, MoveDirection.LEFT, False)[0]
                         done = True
