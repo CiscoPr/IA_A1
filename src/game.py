@@ -2,9 +2,30 @@ import pygame
 from enum import Enum
 from dataclasses import dataclass
 from collections import deque
-
+import heapq
 import time
 
+def get_exit (gamestate):
+    for y in gamestate.board:
+        for x in gamestate.board[y]:
+            if gamestate[y][x] == 3:
+                return (x,y)
+
+def h1 (gamestate):
+    exit = get_exit
+    distance =  abs(gamestate.piece.position.x - exit.x)+ abs(gamestate.piece.position.y - exit.y)
+    return distance*1.5
+
+
+def greedy_search(initial_state, goal_state_func, operators_func, heuristic):
+    setattr(GameState,"__lt__", lambda self, other: heuristic(self) < heuristic(other))
+    states = [initial_state]
+    visited = set()
+    while states:
+        node = heapq.heappop(states)
+        visited.add(node)
+        if goal_state_func(node.state):   # check goal state
+            return node
 
 def position_is_0(board, position):
     if position[0] < 0 or position[0] >= len(board[0]) or position[1] < 0 or position[1] >= len(board):
@@ -28,7 +49,7 @@ class Piece:
         self.position= position
         self.piece_state = piece_state
         self.height = height
-    
+
     def __hash__(self):
         return hash((self.piece_state, self.position))
 
@@ -42,7 +63,7 @@ class TreeNode:
     def add_child(self, child_node):
         self.children.append(child_node)
         child_node.parent = self
-    
+
 
 
 class GameState:
@@ -53,14 +74,14 @@ class GameState:
         self.isAi = isAi
         self.aiMoves = aiMoves
         self.aiLevel=aiLevel
-        
+
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
             return self.__dict__ == other.__dict__
         else:
             return False
-    
+
     def __hash__(self):
         return hash(self.piece)
     ''' - '''
@@ -80,7 +101,7 @@ class GameState:
     def getAiMove(self):
         print(self.aiMoves)
         return self.aiMoves.pop(0)
-       
+
 
 
 def MoveUp(gamestate):
@@ -200,7 +221,7 @@ def execute_move(State: GameState, Move: MoveDirection, isAi):
     if (Move == MoveDirection.UP):
         if(isAi):
             time.sleep(0.2)
-        return MoveUp(State), MoveDirection.UP 
+        return MoveUp(State), MoveDirection.UP
     elif (Move == MoveDirection.RIGHT):
         if(isAi):
             time.sleep(0.2)
@@ -236,5 +257,5 @@ def solution_moves(baseNode):
         currNode = currNode.parent
     moves.reverse()
     return moves
-    
+
 
