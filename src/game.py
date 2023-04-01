@@ -5,27 +5,6 @@ from collections import deque
 import heapq
 import time
 
-def get_exit (gamestate):
-    for y in gamestate.board:
-        for x in gamestate.board[y]:
-            if gamestate[y][x] == 3:
-                return (x,y)
-
-def h1 (gamestate):
-    exit = get_exit
-    distance =  abs(gamestate.piece.position.x - exit.x)+ abs(gamestate.piece.position.y - exit.y)
-    return distance*1.5
-
-
-def greedy_search(initial_state, goal_state_func, operators_func, heuristic):
-    setattr(GameState,"__lt__", lambda self, other: heuristic(self) < heuristic(other))
-    states = [initial_state]
-    visited = set()
-    while states:
-        node = heapq.heappop(states)
-        visited.add(node)
-        if goal_state_func(node.state):   # check goal state
-            return node
 
 def position_is_0(board, position):
     if position[0] < 0 or position[0] >= len(board[0]) or position[1] < 0 or position[1] >= len(board):
@@ -36,6 +15,11 @@ class PieceState(Enum):
     UP = 1
     HORIZONTAL = 2
     VERTICAL = 3
+
+class AiLevel(Enum):
+    BFS = 0
+    DFS = 1
+    GREEDY = 2
 
 class MoveDirection(Enum):
     UP = 1
@@ -90,16 +74,19 @@ class GameState:
         return "(" + str(self.piece) + ")"
 
     def setAiMoves(self):
-        if (self.aiLevel == 0):
+        if (self.aiLevel == AiLevel.BFS.value):
             initial_node = breadth_first_search(self, Victory, child_gamestates)
             self.aiMoves = solution_moves(initial_node)
-        elif (self.aiLevel == 1):
+        elif (self.aiLevel == AiLevel.DFS.value):
             initial_node = depth_first_search(self, Victory, child_gamestates) #TODO add more modes
+            self.aiMoves = solution_moves(initial_node)
+        elif (self.aiLevel == AiLevel.GREEDY.value):
+            initial_node = greedy_search(self, Victory, child_gamestates, h1)
             self.aiMoves = solution_moves(initial_node)
 
 
     def getAiMove(self):
-        print(self.aiMoves)
+
         return self.aiMoves.pop(0)
 
 
@@ -152,10 +139,10 @@ def MoveRight(gamestate):
             return GameState(gamestate.board, piece, isAi=gamestate.isAi, aiLevel=gamestate.aiLevel, aiMoves=gamestate.aiMoves)
 
 def Victory(gamestate):
-        if gamestate.piece.piece_state == PieceState.UP and gamestate.board[gamestate.piece.position[1]][gamestate.piece.position[0]] == 3:
-            return True
-        else:
-            return False
+    if gamestate.piece.piece_state == PieceState.UP and gamestate.board[gamestate.piece.position[1]][gamestate.piece.position[0]] == 3:
+        return True
+    else:
+        return False
 
 
 def Defeat(gamestate):
@@ -172,6 +159,19 @@ def Defeat(gamestate):
             return True
         else:
             return False
+
+def get_exit (gamestate):
+    for y in range(len(gamestate.board)):
+        for x in range(len(gamestate.board[y])):
+            if gamestate.board[y][x] == 3:
+                return (x,y)
+
+def h1 (gamestate):
+
+    exit = get_exit(gamestate)
+    distance =  abs(gamestate.piece.position[0] - exit[0])+ abs(gamestate.piece.position[1] - exit[1])
+    return distance*1.5
+
 
     # Breadth-first Search
 
@@ -217,22 +217,43 @@ def depth_first_search(initial_state, goal_state_func, operators_func):
               queue.appendleft(newChild)
     return None
 
+# Greedy search
+def greedy_search(initial_state, goal_state_func, operators_func, heuristic):
+    setattr(TreeNode,"__lt__", lambda self, other: heuristic(self.state) < heuristic(other.state))
+    root = TreeNode(initial_state)
+    states = [root]
+    visited = set()
+    while states:
+        node = heapq.heappop(states)
+        visited.add(node.state)
+        if goal_state_func(node.state):   # check goal state
+            return node
+        for state, moveDir in operators_func(node.state):   # go through next states
+            # create tree node with the new state
+            newChild = TreeNode(state=state, parent=node.state, move=moveDir)
+            # link child node to its parent in the tree
+            if state not in visited:
+                node.add_child(newChild)
+                heapq.heappush(states, newChild)
+    return None
+
+
 def execute_move(State: GameState, Move: MoveDirection, isAi):
     if (Move == MoveDirection.UP):
         if(isAi):
-            time.sleep(0.2)
+            time.sleep(1)
         return MoveUp(State), MoveDirection.UP
     elif (Move == MoveDirection.RIGHT):
         if(isAi):
-            time.sleep(0.2)
+            time.sleep(1)
         return MoveRight(State), MoveDirection.RIGHT
     elif (Move == MoveDirection.DOWN):
         if(isAi):
-            time.sleep(0.2)
+            time.sleep(1)
         return MoveDown(State), MoveDirection.DOWN
     else:
         if(isAi):
-            time.sleep(0.2)
+            time.sleep(1)
         return MoveLeft(State), MoveDirection.LEFT
 
 
@@ -257,5 +278,4 @@ def solution_moves(baseNode):
         currNode = currNode.parent
     moves.reverse()
     return moves
-
 
