@@ -2,6 +2,29 @@ import pygame
 import os
 from level import *
 from instructions import *
+import heapq
+
+def get_exit (gamestate):
+    for y in gamestate.board:
+        for x in gamestate.board[y]:
+            if gamestate[y][x] == 3:
+                return (x,y)
+
+def h1 (gamestate):
+    exit = get_exit
+    distance =  abs(gamestate.piece.position.x - exit.x)+ abs(gamestate.piece.position.y - exit.y)
+    return distance*1.5
+
+
+def greedy_search(initial_state, goal_state_func, operators_func, heuristic):
+    setattr(GameState,"__lt__", lambda self, other: heuristic(self) < heuristic(other))
+    states = [initial_state]
+    visited = set()
+    while states:
+        node = heapq.heappop(states)
+        visited.add(node)
+        if goal_state_func(node.state):   # check goal state
+            return node
 
 def level_selector(title_font, screen, size, background, font, pointer_x, isAi, mode = 0):
     number_of_levels = 0
@@ -47,7 +70,7 @@ def level_selector(title_font, screen, size, background, font, pointer_x, isAi, 
                         filepath = "../src/maps/map{0}".format(selected_option+1)
                         if isAi:
                             gamestate = start_game(filepath, True, mode)
-                        else: 
+                        else:
                             gamestate = start_game(filepath, False)
                         game_loop(gamestate, screen, size)
 
