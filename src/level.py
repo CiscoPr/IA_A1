@@ -105,7 +105,7 @@ def game_move(gamestate):
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         return 0
-                    if event.key == pygame.K_LEFT:
+                    elif event.key == pygame.K_LEFT:
                         gamestate= execute_move(gamestate, MoveDirection.LEFT, False)[0]
                         done = True
                     elif event.key == pygame.K_RIGHT:

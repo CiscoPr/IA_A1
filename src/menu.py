@@ -8,6 +8,7 @@ def level_selector(title_font, screen, size, background, font, pointer_x, isAi, 
     number_of_levels = 0
     maps_folder = "../src/maps"
 
+
     for level in os.listdir(maps_folder):
         if os.path.isfile(os.path.join(maps_folder, level)):
             number_of_levels += 1
@@ -40,6 +41,14 @@ def level_selector(title_font, screen, size, background, font, pointer_x, isAi, 
                     selected_option += 1
                     if selected_option >= len(options):
                         selected_option = 0
+                elif event.key == pygame.K_RIGHT:
+                    selected_option += 4
+                    if selected_option >= len(options):
+                        selected_option = 0
+                elif event.key == pygame.K_LEFT:
+                    selected_option -= 4
+                    if selected_option < 0:
+                        selected_option = len(options) - 1
                 elif event.key == pygame.K_RETURN:
                     is_selected = True
                     if options[selected_option] == "Return":
@@ -61,11 +70,25 @@ def level_selector(title_font, screen, size, background, font, pointer_x, isAi, 
         # Draw title
         screen.blit(title_surface, title_rect)
 
+        num_options = len(options)
+        num_columns = (num_options + 3) // 4  # round up to nearest integer
+        column_width = screen.get_width() // num_columns
+        column_offset = (screen.get_width() - num_columns * column_width)
         for i, option in enumerate(options):
             option_surface = font.render(option, True, (255, 255, 255))
-            option_rect = option_surface.get_rect(center=(screen.get_width() // 2, 300 + i * 50))
-            option_rects.append(option_rect)
-            screen.blit(option_surface, option_rect)
+            column_index = i // 4
+            x = column_offset + column_index * column_width + column_width // 2
+            y = 300 + (i % 4) * 50
+            if option == "Return":
+                x = screen.get_width() // 2
+                y = 500
+                option_rect = option_surface.get_rect(center=(x,y))
+                option_rects.append(option_rect)
+                screen.blit(option_surface, option_rect)
+            else:
+                option_rect = option_surface.get_rect(center=(x,y))
+                option_rects.append(option_rect)
+                screen.blit(option_surface, option_rect)
 
             # Check if Enter button is pressed and change pointer size
         if pygame.key.get_pressed()[pygame.K_RETURN]:
@@ -73,6 +96,8 @@ def level_selector(title_font, screen, size, background, font, pointer_x, isAi, 
         else:
             pointer_size = font.size("> ")[1]
         # Draw pointer
+        x, y = option_rects[selected_option].center
+        pointer_x = x - font.size("> ")[0] - 80
         pointer_rect = pygame.Rect(pointer_x, option_rects[selected_option].centery - pointer_size // 2, pointer_size, pointer_size)
 
         pygame.draw.rect(screen, (255, 255, 255), pointer_rect)
