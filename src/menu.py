@@ -114,7 +114,7 @@ def level_selector(title_font, screen, size, background, font, pointer_x, isAi, 
 
 
 def ai_select(title_font, screen, size, font, pointer_x, background):
-    options = ["Beginner - BFS", "Beginner - DFS", "Expert - A*" , "Return"]
+    options = ["Beginner - BFS", "Beginner - DFS", "Medium - Greedy","Expert - A*" , "Return"]
     option_rects = []
 
     done = False
@@ -146,9 +146,12 @@ def ai_select(title_font, screen, size, font, pointer_x, background):
                     elif options[selected_option] == "Beginner - DFS":      # TODO- add the AI mode
                         print("Beginner - DFS")
                         level_selector(title_font, screen, size, background, font, pointer_x, True, 1)
+                    elif options[selected_option] == "Medium - Greedy":      # TODO- add the AI mode
+                        print("Medium - Greedy")
+                        level_selector(title_font, screen, size, background, font, pointer_x, True, 2)
                     elif options[selected_option] == "Expert - A*":         # TODO- add the AI mode
                         print("Expert - A*")
-                        level_selector(title_font, screen, size, background, font, pointer_x, True, 2)
+                        level_selector(title_font, screen, size, background, font, pointer_x, True, 3)
                     print("Selected option:", options[selected_option])
 
         # Clear the screen

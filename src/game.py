@@ -20,6 +20,7 @@ class AiLevel(Enum):
     BFS = 0
     DFS = 1
     GREEDY = 2
+    ASTAR = 3
 
 class MoveDirection(Enum):
     UP = 1
@@ -47,6 +48,15 @@ class TreeNode:
     def add_child(self, child_node):
         self.children.append(child_node)
         child_node.parent = self
+    
+    def cost(self):
+        counter = 0
+        print(counter)
+        node = self
+        while(node.parent):
+            counter+=1
+            node = node.parent
+        return counter
 
 
 
@@ -82,6 +92,9 @@ class GameState:
             self.aiMoves = solution_moves(initial_node)
         elif (self.aiLevel == AiLevel.GREEDY.value):
             initial_node = greedy_search(self, Victory, child_gamestates, h1)
+            self.aiMoves = solution_moves(initial_node)
+        elif (self.aiLevel == AiLevel.ASTAR.value):
+            initial_node = a_star_search(self, h1)
             self.aiMoves = solution_moves(initial_node)
 
 
@@ -166,10 +179,10 @@ def get_exit (gamestate):
             if gamestate.board[y][x] == 3:
                 return (x,y)
 
-def h1 (gamestate):
+def h1 (state):
 
-    exit = get_exit(gamestate)
-    distance =  abs(gamestate.piece.position[0] - exit[0])+ abs(gamestate.piece.position[1] - exit[1])
+    exit = get_exit(state.state)
+    distance =  abs(state.state.piece.position[0] - exit[0])+ abs(state.state.piece.position[1] - exit[1])
     return distance*1.5
 
 
@@ -219,11 +232,12 @@ def depth_first_search(initial_state, goal_state_func, operators_func):
 
 # Greedy search
 def greedy_search(initial_state, goal_state_func, operators_func, heuristic):
-    setattr(TreeNode,"__lt__", lambda self, other: heuristic(self.state) < heuristic(other.state))
+    setattr(TreeNode,"__lt__", lambda self, other: heuristic(self) < heuristic(other))
     root = TreeNode(initial_state)
     states = [root]
     visited = set()
     while states:
+       
         node = heapq.heappop(states)
         visited.add(node.state)
         if goal_state_func(node.state):   # check goal state
@@ -235,7 +249,12 @@ def greedy_search(initial_state, goal_state_func, operators_func, heuristic):
             if state not in visited:
                 node.add_child(newChild)
                 heapq.heappush(states, newChild)
+    
     return None
+
+def a_star_search(initial_state, heuristic):
+    return greedy_search(initial_state, Victory, child_gamestates, lambda node: node.cost() + heuristic(node))
+
 
 
 def execute_move(State: GameState, Move: MoveDirection, isAi):
