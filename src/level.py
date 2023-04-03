@@ -1,6 +1,7 @@
 import pygame
+import sys
 import time
-from game import *
+from game import Piece, PieceState, execute_move, Victory, Defeat, Teleport, MoveDirection, GameState
 
 
 def game_loop( gamestate,screen, size):
@@ -55,6 +56,9 @@ def game_display(gamestate, screen, size):
     # Path block display
     path_block = pygame.image.load("../src/assets/images/path_block.png")
 
+    # Tp block display
+    tp_block = pygame.image.load("../src/assets/images/tp_portal.png")
+
     # Blit the background image onto the screen
     screen.blit(background, (0, 0))
 
@@ -72,6 +76,11 @@ def game_display(gamestate, screen, size):
                  x = col * BLOCK_WIDTH + left_margin
                  y = row * BLOCK_HEIGHT + top_margin
                  screen.blit(portal, (x, y))
+            
+            elif gamestate.board[row][col] == 4:
+                 x = col * BLOCK_WIDTH + left_margin
+                 y = row * BLOCK_HEIGHT + top_margin
+                 screen.blit(tp_block, (x,y))
 
 
     x = gamestate.piece.position[0]* BLOCK_WIDTH + left_margin
@@ -132,19 +141,39 @@ def display_endgame(screen, w_or_l):
 def start_game(filepath, isAi, mode = 0):
     board: list(list(int)) = []
     piece: Piece = Piece((0,0), PieceState.UP,2)
+    firstPortal: tuple[int, int] = None
+    secondPortal: tuple[int, int] = None
+    portalMap: dict[tuple[int, int], tuple[int, int]] = {}
+
     with open(filepath) as f:
         lines = f.read().splitlines()
         for (y, line) in enumerate(lines):
             current_row = []
             for (x, char) in enumerate(line.split(' ')):
+                
                 if (char == '2'):
                     piece.position = (x, y)
                     current_row.append(1)
                     continue
+
+                elif (char == '4'):
+                    if firstPortal is None:
+                        firstPortal = (x,y)
+                    else:
+                        secondPortal = (x,y)
+
                 current_row.append(int(char))
             board.append(current_row)
+    
+    if (firstPortal is None and (secondPortal is not None)) or (secondPortal is None and (firstPortal is not None)):
+        sys.stderr.write("Map contains only one portal.")
+        exit(1)
+    elif firstPortal is not None and secondPortal is not None:
+        portalMap[firstPortal] = secondPortal
+        portalMap[secondPortal] = firstPortal
+    
     if isAi:
-        initialGameState = GameState(board, piece, True, mode)
+        initialGameState = GameState(board, piece, portalMap, isAi=True, aiLevel=mode)
         initialGameState.setAiMoves()
         return initialGameState
-    return GameState(board, piece, False)
+    return GameState(board, piece, portalMap, isAi=False)
