@@ -191,7 +191,7 @@ class GameState:
                 sys.exit(1)
             #sys.settrace(None)
             #print(f"Number of instructions executed: {instruction_count}")
-            instruction_count=0
+            #instruction_count=0
             self.aiMoves = solution_moves(initial_node)
         elif (self.aiLevel == AiLevel.DFS.value):
             #funcTime(depth_first_search,self,Victory,child_gamestates)
@@ -200,7 +200,7 @@ class GameState:
             initial_node = depth_first_search(
                 self, Victory, child_gamestates)
             #sys.settrace(None)
-            print(f"Number of instructions executed: {instruction_count}")
+            #print(f"Number of instructions executed: {instruction_count}")
             #instruction_count=0
             if initial_node is None:
                 print("Error: initialNode from DFS was None")

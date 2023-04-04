@@ -176,7 +176,7 @@ def display_endgame(screen, w_or_l: int) -> None:
     pygame.display.flip()
 
 
-def start_game(filepath: str, isAi: bool, mode: AiLevel = AiLevel.BFS):
+def start_game(filepath: str, isAi: bool, mode: AiLevel = AiLevel.BFS.value):
 
     board: list[list[int]] = []
     piece: Piece = Piece((0, 0), PieceState.UP, 2)

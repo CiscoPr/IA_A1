@@ -148,23 +148,23 @@ def ai_select(title_font, screen: Surface, size: tuple[int, int], font, pointer_
                     elif options[selected_option] == "Beginner - BFS":
                         print("Beginner - BFS")
                         level_selector(
-                            title_font, screen, size, background, font, pointer_x, True, AiLevel.BFS)
+                            title_font, screen, size, background, font, pointer_x, True, AiLevel.BFS.value)
                     elif options[selected_option] == "Beginner - DFS":
                         print("Beginner - DFS")
                         level_selector(
-                            title_font, screen, size, background, font, pointer_x, True, AiLevel.DFS)
+                            title_font, screen, size, background, font, pointer_x, True, AiLevel.DFS.value)
                     elif options[selected_option] == "Medium - Greedy":
                         print("Medium - Greedy")
                         level_selector(
-                            title_font, screen, size, background, font, pointer_x, True, AiLevel.GREEDY)
+                            title_font, screen, size, background, font, pointer_x, True, AiLevel.GREEDY.value)
                     elif options[selected_option] == "Expert - A*":
                         print("Expert - A*")
                         level_selector(
-                            title_font, screen, size, background, font, pointer_x, True, AiLevel.ASTAR)
+                            title_font, screen, size, background, font, pointer_x, True, AiLevel.ASTAR.value)
                     elif options[selected_option] == "Expert - Weighted A*":
                         print("Expert - Weighted A*")
                         level_selector(
-                            title_font, screen, size, background, font, pointer_x, True, AiLevel.WASTAR)
+                            title_font, screen, size, background, font, pointer_x, True, AiLevel.WASTAR.value)
                     print("Selected option:", options[selected_option])
 
         # Clear the screen
