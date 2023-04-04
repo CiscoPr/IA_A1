@@ -1,15 +1,12 @@
+from pygame import Surface
 import pygame
-def display_instructions(screen, background):
+def display_instructions(screen: Surface, background: Surface) -> None:
 
     first_instruction = pygame.image.load("../src/assets/images/instructions1.png")
     second_instruction = pygame.image.load("../src/assets/images/instructions2.png")
 
     # Set up a boolean to keep track of whether the loop should continue
     running = True
-
-    # Set up a boolean to keep track of which image to display
-    showing_image1 = True
-    showing_image2 = False
 
     screen.blit(background, (0, 0))
 

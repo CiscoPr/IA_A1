@@ -1,36 +1,68 @@
-import pygame
 from enum import Enum
 from dataclasses import dataclass
 from collections import deque
 import heapq
 import time
 import sys
+from typing import Callable
 from memory_profiler import memory_usage
 
 instruction_count=0
 
-def position_is_0(board, position):
+def position_is_0(board: list[list[int]], position: tuple[int, int]) -> bool:
+    """Checks if there's a 0 in the board at the spicified position
+
+    Args:
+        board: The game's board
+        position: A tuple containing the position that is to be checked
+    
+    Returns:
+        A boolean indicating the result
+    """
     if position[0] < 0 or position[0] >= len(board[0]) or position[1] < 0 or position[1] >= len(board):
         return True
     else:
         return board[position[1]][position[0]] == 0
 
+def funcTime(fun: Callable, *args) -> None:
+    """Function to measure time of execution of a given function, printing it to the standard output
 
-def funcTime(fun, *args):
+    Args:
+        fun: function to be timed
+        args: arguments that will be passed to the function
+    
+    Returns:
+        Nothing.
+    """
     start = time.time()
     res = fun(*args)
     end = time.time()
     print (round(end-start,6))
 
 
-def maxMemory(fun, *args):
+def maxMemory(fun: Callable, *args) -> None:
+    """Function to measure max memory usage of a given function, printing it to the standard output
+
+    Args:
+        fun: function to be measured
+        args: arguments that will be passed to the function
+        
+    Returns:
+        Nothing.
+    """
     list=[arg for arg in args]
     mem_usage = memory_usage((fun, list))
     print('Maximum memory usage: %s' % max(mem_usage))        
 
 
+def tracefunc(frame, event: str, arg) -> Callable:
+    """Function to measure number of instructions of a given function and increase global counter
 
-def tracefunc(frame, event, arg):
+    Args:
+        event: Name of the event we wish to measure
+
+    Returns: ? From chatgpt 
+    """
     if event == "line":
         global instruction_count
         instruction_count += 1
@@ -38,20 +70,27 @@ def tracefunc(frame, event, arg):
 
 
 class PieceState(Enum):
+    """ Enum that defines the state that the piece is in
+    """
     UP = 1
     HORIZONTAL = 2
     VERTICAL = 3
 
 
 class AiLevel(Enum):
+    """ Enum that defines the diferent bot algorithms
+    """
+
     BFS = 0
     DFS = 1
     GREEDY = 2
     ASTAR = 3
-    WASTAR = 4    
+    WASTAR = 4
 
 
 class MoveDirection(Enum):
+    """ Enum that defines in which direction a move was done
+    """
     UP = 1
     RIGHT = 2
     DOWN = 3
@@ -60,29 +99,42 @@ class MoveDirection(Enum):
 
 @dataclass
 class Piece:
-    def __init__(self, position, piece_state, height):
-        self.position = position
-        self.piece_state = piece_state
-        self.height = height
+    """ Class that contains the piece's position, state (PieceState) and height.
+    
+    Fields:
+        position: tuple[int, int] - The coordinate of the piece's part closest to (0, 0)
+        piece_state: PieceState - Current state of the piece
+        height: The piece's height
+    """
+    def __init__(self, position: tuple[int, int], piece_state: PieceState, height: int):
+        self.position: tuple[int, int] = position
+        self.piece_state: PieceState = piece_state
+        self.height: int = height
 
     def __hash__(self):
         return hash((self.piece_state, self.position))
 
 
 class TreeNode:
-    def __init__(self, state, parent=None, move=None):
-        self.state = state
+    """ Class that defines the tree node to be used by the algorithms
+    
+    Fields:
+        state: Gamestate corresponding to the node
+        parent: parent node
+        move: operator that generated this node
+    """
+    def __init__(self, state, parent=None, move: MoveDirection | None = None):
+        self.state: GameState = state
         self.parent = parent
         self.children = []
-        self.move = move
+        self.move: MoveDirection | None = move
 
-    def add_child(self, child_node):
+    def add_child(self, child_node) -> None:
         self.children.append(child_node)
         child_node.parent = self
 
-    def cost(self):
-        counter = 0
-        #print(counter)
+    def cost(self) -> int:
+        counter: int = 0
         node = self
         while (node.parent):
             counter += 1
@@ -91,86 +143,123 @@ class TreeNode:
 
 
 class GameState:
-
-    def __init__(self, board, piece, portals: dict[tuple[int, int], tuple[int, int]], isAi=False, aiLevel=0, aiMoves=[]):
-        self.board: list[int] = board
+    """
+       Class that defines the game state to be used by the functions along the program
+       
+    Fields:
+        board: a list of lists corresponding to the game board
+        piece: an object representing a player piece
+        portals: a dictionary which represents the portals and their coordinates
+        isAi: a boolean to determine if the player chose AI mode or not
+        aiLevel: sets the value of the AI
+        aiMoves: a list that will contain all the moves for the AI
+    """
+    def __init__(self, board: list[list[int]], piece: Piece, portals: dict[tuple[int, int], tuple[int, int]], isAi: bool = False, aiLevel: AiLevel = AiLevel.BFS, aiMoves: list[MoveDirection]=[]):
+        self.board: list[list[int]] = board
         self.piece: Piece = piece
         self.isAi: bool = isAi
-        self.aiMoves = aiMoves
-        self.aiLevel = aiLevel
+        self.aiMoves: list[MoveDirection] = aiMoves
+        self.aiLevel: AiLevel = aiLevel
         self.portals: dict[tuple[int, int], tuple[int, int]] = portals
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if isinstance(other, self.__class__):
             return self.__dict__ == other.__dict__
         else:
             return False
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.piece)
     ''' - '''
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "(" + str(self.piece) + ")"
 
-    def setAiMoves(self):
+
+    # Commented the performance tests
+    def setAiMoves(self) -> None:
         global instruction_count
+
         if (self.aiLevel == AiLevel.BFS.value):
-          
             #funcTime(breadth_first_search,self,Victory,child_gamestates)
-            maxMemory(breadth_first_search,self,Victory,child_gamestates)
+            #maxMemory(breadth_first_search,self,Victory,child_gamestates) # Only tested in linux, may crash in other OS
             #sys.settrace(tracefunc)
             initial_node = breadth_first_search(
                 self, Victory, child_gamestates)
+            if (initial_node is None):
+                print("Error: initialNode from breadth_first_search was None")
+                sys.exit(1)
             #sys.settrace(None)
-           # print(f"Number of instructions executed: {instruction_count}")
+            #print(f"Number of instructions executed: {instruction_count}")
             instruction_count=0
             self.aiMoves = solution_moves(initial_node)
         elif (self.aiLevel == AiLevel.DFS.value):
-            funcTime(depth_first_search,self,Victory,child_gamestates)
-            maxMemory(depth_first_search,self,Victory,child_gamestates)
-            sys.settrace(tracefunc)
+            #funcTime(depth_first_search,self,Victory,child_gamestates)
+            #maxMemory(depth_first_search,self,Victory,child_gamestates)
+            #sys.settrace(tracefunc)
             initial_node = depth_first_search(
                 self, Victory, child_gamestates)
-            sys.settrace(None)
+            #sys.settrace(None)
             print(f"Number of instructions executed: {instruction_count}")
-            instruction_count=0
+            #instruction_count=0
+            if initial_node is None:
+                print("Error: initialNode from DFS was None")
+                sys.exit(1)
+
             self.aiMoves = solution_moves(initial_node)
+
         elif (self.aiLevel == AiLevel.GREEDY.value):
-            funcTime(greedy_search,self,Victory,child_gamestates,h1)
-            maxMemory(greedy_search,self,Victory,child_gamestates,h1)
-            sys.settrace(tracefunc)
+            #funcTime(greedy_search,self,Victory,child_gamestates,h1)
+            #maxMemory(greedy_search,self,Victory,child_gamestates,h1)
+            #sys.settrace(tracefunc)
             initial_node = greedy_search(self, Victory, child_gamestates, h1)
-            sys.settrace(None)
-            print(f"Number of instructions executed: {instruction_count}")
-            instruction_count=0
+            #sys.settrace(None)
+            #print(f"Number of instructions executed: {instruction_count}")
+            #instruction_count=0
+            if (initial_node is None):
+                print("Error: initialNode from greedy was None")
+                sys.exit(1)
             self.aiMoves = solution_moves(initial_node)
+
         elif (self.aiLevel == AiLevel.ASTAR.value):
-            funcTime(a_star_search,self,h1)
-            maxMemory(a_star_search, self, h1)
-            sys.settrace(tracefunc)
+            #funcTime(a_star_search,self,h1)
+            #maxMemory(a_star_search, self, h1)
+            #sys.settrace(tracefunc)
             initial_node = a_star_search(self, h1)
-            sys.settrace(None)
-            print(f"Number of instructions executed: {instruction_count}")
-            instruction_count=0
+            #sys.settrace(None)
+            #print(f"Number of instructions executed: {instruction_count}")
+            #instruction_count=0
+            if (initial_node is None):
+                print("Error: initialNode from Astar was None")
+                sys.exit(1)
             self.aiMoves = solution_moves(initial_node)
         elif (self.aiLevel == AiLevel.WASTAR.value):
-            funcTime(weighted_a_star_search,self,h1)
-            maxMemory(weighted_a_star_search,self,h1)
-            sys.settrace(tracefunc)
+            #funcTime(weighted_a_star_search,self,h1)
+            #maxMemory(weighted_a_star_search,self,h1)
+            #sys.settrace(tracefunc)
             initial_node = weighted_a_star_search(self, h1)
-            sys.settrace(None)
-            print(f"Number of instructions executed: {instruction_count}")
-            instruction_count=0
-            self.aiMoves = solution_moves(initial_node)    
+            #sys.settrace(None)
+            #print(f"Number of instructions executed: {instruction_count}")
+            #instruction_count=0
+            if (initial_node is None):
+                print("Error: initialNode from Weighted Astar was None")
+                sys.exit(1)
+            self.aiMoves = solution_moves(initial_node)
         
 
-    def getAiMove(self):
-
+    def getAiMove(self) -> MoveDirection:
         return self.aiMoves.pop(0)
 
 
-def MoveUp(gamestate):
+def MoveUp(gamestate: GameState) -> GameState:
+    """ Creates a new GameState based on the input GameState, in which the piece has moved up once
+    
+    Args:
+        gamestate: GameState - Input gamestate
+
+    Returns:
+        Transformed GameState
+    """
     piece = None
     if gamestate.piece.piece_state == PieceState.VERTICAL:
         piece = Piece(
@@ -178,7 +267,7 @@ def MoveUp(gamestate):
     elif gamestate.piece.piece_state == PieceState.HORIZONTAL:
         piece = Piece((gamestate.piece.position[0], gamestate.piece.position[1]-1),
                       PieceState.HORIZONTAL, gamestate.piece.height)
-    elif gamestate.piece.piece_state == PieceState.UP:
+    else:
         piece = Piece((gamestate.piece.position[0], gamestate.piece.position[1] -
                       gamestate.piece.height), PieceState.VERTICAL, gamestate.piece.height)
 
@@ -186,7 +275,15 @@ def MoveUp(gamestate):
     return Teleport(stateBeforeTP)
 
 
-def MoveDown(gamestate):
+def MoveDown(gamestate: GameState) -> GameState:
+    """ Creates a new GameState based on the input GameState, in which the piece has moved dpwn once
+    
+    Args:
+        gamestate: GameState - Input gamestate
+
+    Returns:
+        Transformed GameState
+    """
     piece = None
 
     if gamestate.piece.piece_state == PieceState.VERTICAL:
@@ -195,7 +292,7 @@ def MoveDown(gamestate):
     elif gamestate.piece.piece_state == PieceState.HORIZONTAL:
         piece = Piece((gamestate.piece.position[0], gamestate.piece.position[1]+1),
                       PieceState.HORIZONTAL, gamestate.piece.height)
-    elif gamestate.piece.piece_state == PieceState.UP:
+    else:
         piece = Piece(
             (gamestate.piece.position[0], gamestate.piece.position[1]+1), PieceState.VERTICAL, gamestate.piece.height)
 
@@ -204,7 +301,15 @@ def MoveDown(gamestate):
 
 
 
-def MoveLeft(gamestate):
+def MoveLeft(gamestate: GameState) -> GameState:
+    """ Creates a new GameState based on the input GameState, in which the piece has moved left once
+    
+    Args:
+        gamestate: GameState - Input gamestate
+
+    Returns:
+        Transformed GameState
+    """
     piece = None
     if gamestate.piece.piece_state == PieceState.VERTICAL:
         piece = Piece(
@@ -212,7 +317,7 @@ def MoveLeft(gamestate):
     elif gamestate.piece.piece_state == PieceState.HORIZONTAL:
         piece = Piece(
             (gamestate.piece.position[0]-1, gamestate.piece.position[1]), PieceState.UP, gamestate.piece.height)
-    elif gamestate.piece.piece_state == PieceState.UP:
+    else:
         piece = Piece((gamestate.piece.position[0]-gamestate.piece.height,
                       gamestate.piece.position[1]), PieceState.HORIZONTAL, gamestate.piece.height)
 
@@ -221,7 +326,15 @@ def MoveLeft(gamestate):
 
 
 
-def MoveRight(gamestate):
+def MoveRight(gamestate: GameState) -> GameState:
+    """ Creates a new GameState based on the input GameState, in which the piece has moved right once
+    
+    Args:
+        gamestate: GameState - Input gamestate
+
+    Returns:
+        Transformed GameState
+    """
     piece = None
     if gamestate.piece.piece_state == PieceState.VERTICAL:
         piece = Piece(
@@ -229,7 +342,7 @@ def MoveRight(gamestate):
     elif gamestate.piece.piece_state == PieceState.HORIZONTAL:
         piece = Piece((gamestate.piece.position[0]+gamestate.piece.height,
                       gamestate.piece.position[1]), PieceState.UP, gamestate.piece.height)
-    elif gamestate.piece.piece_state == PieceState.UP:
+    else:
         piece = Piece((gamestate.piece.position[0]+1, gamestate.piece.position[1]),
                       PieceState.HORIZONTAL, gamestate.piece.height)
 
@@ -237,14 +350,31 @@ def MoveRight(gamestate):
     return Teleport(stateBeforeTP)
 
 
-def Victory(gamestate: GameState):
+def Victory(gamestate: GameState) -> bool:
+    """ Checks if the current GameState is a winning one, aka if the player is at the exit and upright. 
+    
+    Args:
+        gamestate: GameState - Input gamestate
+
+    Returns:
+        Bool indicating the result
+    """
     if gamestate.piece.piece_state == PieceState.UP and gamestate.board[gamestate.piece.position[1]][gamestate.piece.position[0]] == 3:
         return True
     else:
         return False
 
 
-def Defeat(gamestate: GameState):
+def Defeat(gamestate: GameState) -> bool:
+    """ Checks if the current GameState is a losing one, aka if one of the edges of the piece is not on stable ground. 
+
+    Args:
+        gamestate: GameState - Input gamestate
+
+    Returns:
+        Bool indicating the result
+    """
+
     head_position = gamestate.piece.position
     tail_position = (0, 0)
 
@@ -263,6 +393,15 @@ def Defeat(gamestate: GameState):
 
 
 def Teleport(gamestate: GameState) -> GameState:
+    """ Checks if the player is standing in a portal, and if it is execute the teleportation and update the gamestate. 
+    
+    Args:
+        gamestate: GameState - Input GameState
+
+    Returns:
+        The updated (or not) GameState
+    """
+
     if (gamestate.piece.piece_state == PieceState.UP) and (gamestate.piece.position in gamestate.portals.keys()):
         gamestate.piece.position = gamestate.portals[gamestate.piece.position]
     return gamestate
@@ -270,15 +409,35 @@ def Teleport(gamestate: GameState) -> GameState:
 
 
 
-def get_exit(gamestate: GameState):
+def get_exit(gamestate: GameState) -> tuple[int, int]:
+    """ Finds the exit in a given GameState's board 
+    
+    Args:
+        gamestate: GameState - Input gamestate
+
+    Returns:
+        Tuple with the exit's coordinates
+    """
+
     for y in range(len(gamestate.board)):
         for x in range(len(gamestate.board[y])):
             if gamestate.board[y][x] == 3:
                 return (x, y)
+    return (-1, -1)
 
 
-def h1(node: TreeNode):
-    exit = get_exit(node.state)
+def h1(node: TreeNode) -> float:
+    """ Evaluates how good the current state is based on manhattan distance, taking into account the existing portals.
+    Returns the "distance", so the lower the better
+    
+    Args:
+        node: TreeNode - The node with the GameState to be evaluated
+
+    Returns:
+        A float with the calculated "distance"
+    """
+
+    exit: tuple[int, int] = get_exit(node.state)
     distance = (abs(node.state.piece.position[0] - exit[0]) + \
         abs(node.state.piece.position[1] - exit[1])) / ((node.state.piece.height+1)/2)
     portalKeys = list(node.state.portals.keys())
@@ -307,7 +466,7 @@ def h1(node: TreeNode):
 
 
 # Breadth-first Search
-def breadth_first_search(initial_state, goal_state_func, operators_func):
+def breadth_first_search(initial_state: GameState, goal_state_func: Callable, operators_func: Callable) -> TreeNode | None:
     # create the root node in the search tree
     root = TreeNode(state=initial_state, move=None)
     queue = deque([root])   # initialize the queue to store the nodes
@@ -331,7 +490,7 @@ def breadth_first_search(initial_state, goal_state_func, operators_func):
     return None
 
 # Depth First Search
-def depth_first_search(initial_state, goal_state_func, operators_func):
+def depth_first_search(initial_state: GameState, goal_state_func: Callable, operators_func: Callable) -> TreeNode | None:
     root = TreeNode(initial_state)   # create the root node in the search tree
     queue = deque([root])   # initialize the queue to store the nodes
     visited = set([initial_state])
@@ -353,7 +512,7 @@ def depth_first_search(initial_state, goal_state_func, operators_func):
     return None
 
 # Greedy search
-def greedy_search(initial_state, goal_state_func, operators_func, heuristic):
+def greedy_search(initial_state: GameState, goal_state_func: Callable, operators_func: Callable, heuristic: Callable) -> TreeNode | None:
     setattr(TreeNode, "__lt__", lambda self,
             other: heuristic(self) < heuristic(other))
     root = TreeNode(initial_state)
@@ -376,14 +535,30 @@ def greedy_search(initial_state, goal_state_func, operators_func, heuristic):
 
     return None
 
-
-def a_star_search(initial_state, heuristic):
+ # A* 
+def a_star_search(initial_state: GameState, heuristic: Callable) -> TreeNode | None:
     return greedy_search(initial_state, Victory, child_gamestates, lambda node: node.cost() + heuristic(node))
 
-def weighted_a_star_search(initial_state, heuristic):
+
+# Weighted A* with coeficient 3 
+def weighted_a_star_search(initial_state, heuristic: Callable) -> TreeNode | None:
     return greedy_search(initial_state, Victory, child_gamestates, lambda node: node.cost() + 3*heuristic(node))
 
-def execute_move(State: GameState, Move: MoveDirection, isAi):
+
+
+def execute_move(State: GameState, Move: MoveDirection, isAi) -> tuple[GameState, MoveDirection]:
+    """ Executes a move and updates GameState based on it and the input move by using MoveUp, MoveLeft... 
+    
+    Args:
+        State: GameState - Input gamestate
+        Move: MoveDirection - Direction in which the piece will move
+        isAI: Boolean - If it is AI do sleep as the move is instantaneous
+
+    Returns:
+        Updated GameState
+    """
+
+  
     if (Move == MoveDirection.UP):
         if (isAi):
             time.sleep(1)
@@ -402,7 +577,17 @@ def execute_move(State: GameState, Move: MoveDirection, isAi):
         return MoveLeft(State), MoveDirection.LEFT
 
 
-def child_gamestates(gamestate):
+def child_gamestates(gamestate: GameState) -> list[tuple[GameState, MoveDirection]]:
+    
+    """ Function to generate all the moves that don't lead to defeat
+    
+    Args:
+        gamestate: GameState - Input gamestate
+
+    Returns:
+        newstates: tuple of the new game state and the operator used to generate it 
+    """
+
     new_states = []
     if (not Defeat(MoveUp(gamestate))):
         new_states.append((MoveUp(gamestate), MoveDirection.UP))
@@ -415,7 +600,18 @@ def child_gamestates(gamestate):
     return new_states
 
 
-def solution_moves(baseNode):
+def solution_moves(baseNode: TreeNode) -> list[MoveDirection]:
+    """ Uses the tree's nodes' information to get the list of moves that
+    the algorithm determined and returns them 
+    
+    Args:
+        baseNode: TreeNode - The node corresponding to the last
+        move we want to check, usually the node corresponding to the winning state.
+
+    Returns:
+        A list of all the moves used to reach the input node, in order.
+    """
+
     moves = [baseNode.move]
     currNode = baseNode
     while (currNode.parent):
