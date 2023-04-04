@@ -177,6 +177,22 @@ def ai_select(title_font, screen, size, font, pointer_x, background):
         else:
             pointer_size = font.size("> ")[1]
         
+        # Draw pointer
+        if selected_option == 2:
+            x, y = option_rects[selected_option].center
+            pointer_x = x - font.size("> ")[0] - 190
+        elif selected_option == 3:
+            x, y = option_rects[selected_option].center
+            pointer_x = x - font.size("> ")[0] - 140
+        elif selected_option == 4:
+            x, y = option_rects[selected_option].center
+            pointer_x = x - font.size("> ")[0] - 250
+        elif selected_option == 5:
+            x, y = option_rects[selected_option].center
+            pointer_x = x - font.size("> ")[0] - 80
+        else:
+            x, y = option_rects[selected_option].center
+            pointer_x = x - font.size("> ")[0] - 175
         
         # Draw pointer
         pointer_rect = pygame.Rect(pointer_x, option_rects[selected_option].centery - pointer_size // 2, pointer_size, pointer_size)

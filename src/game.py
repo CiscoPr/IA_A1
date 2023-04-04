@@ -14,6 +14,22 @@ def position_is_0(board, position):
         return board[position[1]][position[0]] == 0
 
 
+def funcTime(fun, *args):
+    start = time.time()
+    res = fun(*args)
+    end = time.time()
+    print (round(end-start,6))
+
+
+def maxMemory(fun, *args):
+    list=[arg for arg in args]
+    mem_usage = memory_usage((fun, list))
+    print('Maximum memory usage: %s' % max(mem_usage))        
+
+
+
+
+
 class PieceState(Enum):
     UP = 1
     HORIZONTAL = 2
@@ -92,20 +108,34 @@ class GameState:
 
     def setAiMoves(self):
         if (self.aiLevel == AiLevel.BFS.value):
+          
+            funcTime(breadth_first_search,self,Victory,child_gamestates)
+            maxMemory(breadth_first_search,self,Victory,child_gamestates)
+           
             initial_node = breadth_first_search(
                 self, Victory, child_gamestates)
+            
             self.aiMoves = solution_moves(initial_node)
         elif (self.aiLevel == AiLevel.DFS.value):
+            args = [self, Victory, child_gamestates]
+            funcTime(depth_first_search,self,Victory,child_gamestates)
+            maxMemory(depth_first_search,self,Victory,child_gamestates)
             initial_node = depth_first_search(
                 self, Victory, child_gamestates)
             self.aiMoves = solution_moves(initial_node)
         elif (self.aiLevel == AiLevel.GREEDY.value):
+            funcTime(greedy_search,self,Victory,child_gamestates,h1)
+            maxMemory(greedy_search,self,Victory,child_gamestates,h1)
             initial_node = greedy_search(self, Victory, child_gamestates, h1)
             self.aiMoves = solution_moves(initial_node)
         elif (self.aiLevel == AiLevel.ASTAR.value):
+            funcTime(a_star_search,self,h1)
+            maxMemory(a_star_search, self, h1)
             initial_node = a_star_search(self, h1)
             self.aiMoves = solution_moves(initial_node)
         elif (self.aiLevel == AiLevel.WASTAR.value):
+            funcTime(weighted_a_star_search,self,h1)
+            maxMemory(weighted_a_star_search,self,h1)
             initial_node = weighted_a_star_search(self, h1)
             self.aiMoves = solution_moves(initial_node)    
         
@@ -369,3 +399,4 @@ def solution_moves(baseNode):
         currNode = currNode.parent
     moves.reverse()
     return moves
+
