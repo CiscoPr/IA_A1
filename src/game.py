@@ -95,7 +95,7 @@ class GameState:
             self.aiMoves = solution_moves(initial_node)
         elif (self.aiLevel == AiLevel.DFS.value):
             initial_node = depth_first_search(
-                self, Victory, child_gamestates)  # TODO add more modes
+                self, Victory, child_gamestates)
             self.aiMoves = solution_moves(initial_node)
         elif (self.aiLevel == AiLevel.GREEDY.value):
             initial_node = greedy_search(self, Victory, child_gamestates, h1)
