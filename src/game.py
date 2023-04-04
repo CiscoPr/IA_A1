@@ -117,13 +117,13 @@ class GameState:
         global instruction_count
         if (self.aiLevel == AiLevel.BFS.value):
           
-            funcTime(breadth_first_search,self,Victory,child_gamestates)
+            #funcTime(breadth_first_search,self,Victory,child_gamestates)
             maxMemory(breadth_first_search,self,Victory,child_gamestates)
-            sys.settrace(tracefunc)
+            #sys.settrace(tracefunc)
             initial_node = breadth_first_search(
                 self, Victory, child_gamestates)
-            sys.settrace(None)
-            print(f"Number of instructions executed: {instruction_count}")
+            #sys.settrace(None)
+           # print(f"Number of instructions executed: {instruction_count}")
             instruction_count=0
             self.aiMoves = solution_moves(initial_node)
         elif (self.aiLevel == AiLevel.DFS.value):
