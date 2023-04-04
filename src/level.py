@@ -97,11 +97,12 @@ def game_display(gamestate, screen, size):
     if gamestate.piece.piece_state == PieceState.UP:
         screen.blit(player_blockh1, (x, y))
     elif gamestate.piece.piece_state == PieceState.VERTICAL:
-         screen.blit(player_blockv1, (x, y))
-         screen.blit(player_blockv2, (x, y + BLOCK_HEIGHT))
+        for blocks in range(gamestate.piece.height):
+            screen.blit(player_blockv1, (x, y+BLOCK_HEIGHT*blocks))
     elif gamestate.piece.piece_state == PieceState.HORIZONTAL:
-         screen.blit(player_blockh1, (x, y))
-         screen.blit(player_blockh2, (x + BLOCK_WIDTH, y))
+        for blocks in range(gamestate.piece.height):
+            screen.blit(player_blockh1, (x+blocks*BLOCK_WIDTH, y))
+         
 
     # Draw Piece
         # Update the screen
@@ -156,6 +157,8 @@ def start_game(filepath, isAi, mode = 0):
 
     with open(filepath) as f:
         lines = f.read().splitlines()
+        height=lines.pop(0)
+        piece.height=int(height)
         for (y, line) in enumerate(lines):
             current_row = []
             for (x, char) in enumerate(line.split(' ')):
