@@ -4,20 +4,29 @@ import time
 from game import Piece, PieceState, execute_move, Victory, Defeat, Teleport, MoveDirection, GameState
 
 
-def game_loop( gamestate,screen, size):
+def game_loop(gamestate,screen, size):
+    number_moves = 0
+    font = pygame.font.Font("../src/assets/fonts/PressStart2P-Regular.ttf", 20)
     while True:
         game_display(gamestate, screen, size)
+
+        moves_text = font.render("Moves: {}".format(number_moves), True, (255,255,255))
+        moves_rect = moves_text.get_rect()
+        moves_rect.topright = (size[0]-10, 10)
+        screen.blit(moves_text, moves_rect)
+        pygame.display.flip()
         gamestate = game_move(gamestate)
+        number_moves += 1
         if gamestate == 0:
-            break
+            return number_moves
         elif Victory(gamestate):
             display_endgame(screen, 0)
             time.sleep(3)
-            break
+            return number_moves
         elif Defeat(gamestate):
             display_endgame(screen, 1)
             time.sleep(3)
-            break
+            return number_moves
 
 # Define some colors
 BLACK = (0, 0, 0)
@@ -76,7 +85,7 @@ def game_display(gamestate, screen, size):
                  x = col * BLOCK_WIDTH + left_margin
                  y = row * BLOCK_HEIGHT + top_margin
                  screen.blit(portal, (x, y))
-            
+
             elif gamestate.board[row][col] == 4:
                  x = col * BLOCK_WIDTH + left_margin
                  y = row * BLOCK_HEIGHT + top_margin
@@ -129,7 +138,7 @@ def game_move(gamestate):
     return gamestate
 
 def display_endgame(screen, w_or_l):
-    print(w_or_l)
+    # print(w_or_l)
     if w_or_l == 0:
         endscreen = pygame.image.load("../src/assets/images/you_win.png")
     else:
@@ -150,7 +159,7 @@ def start_game(filepath, isAi, mode = 0):
         for (y, line) in enumerate(lines):
             current_row = []
             for (x, char) in enumerate(line.split(' ')):
-                
+
                 if (char == '2'):
                     piece.position = (x, y)
                     current_row.append(1)
@@ -164,14 +173,14 @@ def start_game(filepath, isAi, mode = 0):
 
                 current_row.append(int(char))
             board.append(current_row)
-    
+
     if (firstPortal is None and (secondPortal is not None)) or (secondPortal is None and (firstPortal is not None)):
         sys.stderr.write("Map contains only one portal.")
         exit(1)
     elif firstPortal is not None and secondPortal is not None:
         portalMap[firstPortal] = secondPortal
         portalMap[secondPortal] = firstPortal
-    
+
     if isAi:
         initialGameState = GameState(board, piece, portalMap, isAi=True, aiLevel=mode)
         initialGameState.setAiMoves()

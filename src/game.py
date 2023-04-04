@@ -57,7 +57,7 @@ class TreeNode:
 
     def cost(self):
         counter = 0
-        print(counter)
+        #print(counter)
         node = self
         while (node.parent):
             counter += 1
@@ -120,7 +120,7 @@ def MoveUp(gamestate):
     elif gamestate.piece.piece_state == PieceState.UP:
         piece = Piece((gamestate.piece.position[0], gamestate.piece.position[1] -
                       gamestate.piece.height), PieceState.VERTICAL, gamestate.piece.height)
-    
+
     stateBeforeTP = GameState(gamestate.board, piece, gamestate.portals, isAi=gamestate.isAi, aiLevel=gamestate.aiLevel, aiMoves=gamestate.aiMoves)
     return Teleport(stateBeforeTP)
 
@@ -137,7 +137,7 @@ def MoveDown(gamestate):
     elif gamestate.piece.piece_state == PieceState.UP:
         piece = Piece(
             (gamestate.piece.position[0], gamestate.piece.position[1]+1), PieceState.VERTICAL, gamestate.piece.height)
-    
+
     stateBeforeTP = GameState(gamestate.board, piece, gamestate.portals, isAi=gamestate.isAi, aiLevel=gamestate.aiLevel, aiMoves=gamestate.aiMoves)
     return Teleport(stateBeforeTP)
 
@@ -154,7 +154,7 @@ def MoveLeft(gamestate):
     elif gamestate.piece.piece_state == PieceState.UP:
         piece = Piece((gamestate.piece.position[0]-gamestate.piece.height,
                       gamestate.piece.position[1]), PieceState.HORIZONTAL, gamestate.piece.height)
-    
+
     stateBeforeTP = GameState(gamestate.board, piece, gamestate.portals, isAi=gamestate.isAi, aiLevel=gamestate.aiLevel, aiMoves=gamestate.aiMoves)
     return Teleport(stateBeforeTP)
 
@@ -171,7 +171,7 @@ def MoveRight(gamestate):
     elif gamestate.piece.piece_state == PieceState.UP:
         piece = Piece((gamestate.piece.position[0]+1, gamestate.piece.position[1]),
                       PieceState.HORIZONTAL, gamestate.piece.height)
-    
+
     stateBeforeTP = GameState(gamestate.board, piece, gamestate.portals, isAi=gamestate.isAi, aiLevel=gamestate.aiLevel, aiMoves=gamestate.aiMoves)
     return Teleport(stateBeforeTP)
 
@@ -239,12 +239,12 @@ def h1(node: TreeNode):
 
         distance_to_exit_through_p1 = (distance_from_p2_to_exit + distance_from_player_to_p1) * 1.5
         distance_to_exit_through_p2 = (distance_from_p1_to_exit + distance_from_player_to_p2) * 1.5
-        
+
         return min(distance, distance_to_exit_through_p1, distance_to_exit_through_p2)
-            
+
     return distance #height+1/2
 
-    
+
 # Breadth-first Search
 def breadth_first_search(initial_state, goal_state_func, operators_func):
     # create the root node in the search tree
@@ -343,11 +343,11 @@ def child_gamestates(gamestate):
     new_states = []
     if (not Defeat(MoveUp(gamestate))):
         new_states.append((MoveUp(gamestate), MoveDirection.UP))
-    if (not Defeat(MoveRight(gamestate))):  
+    if (not Defeat(MoveRight(gamestate))):
         new_states.append((MoveRight(gamestate), MoveDirection.RIGHT))
     if (not Defeat(MoveDown(gamestate))):
         new_states.append((MoveDown(gamestate), MoveDirection.DOWN))
-    if (not Defeat(MoveLeft(gamestate))):      
+    if (not Defeat(MoveLeft(gamestate))):
         new_states.append((MoveLeft(gamestate), MoveDirection.LEFT))
     return new_states
 

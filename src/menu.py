@@ -59,7 +59,9 @@ def level_selector(title_font, screen, size, background, font, pointer_x, isAi, 
                             gamestate = start_game(filepath, True, mode)
                         else:
                             gamestate = start_game(filepath, False)
-                        game_loop(gamestate, screen, size)
+
+                        number_of_moves = game_loop(gamestate, screen, size)
+                        print("Number of moves: ", number_of_moves)
 
                     print("Selected option:", options[selected_option])
 
