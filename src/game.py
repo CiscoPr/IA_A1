@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from collections import deque
 import heapq
 import time
+from memory_profiler import memory_usage
 
 
 def position_is_0(board, position):
@@ -224,7 +225,7 @@ def get_exit(gamestate: GameState):
 def h1(node: TreeNode):
     exit = get_exit(node.state)
     distance = (abs(node.state.piece.position[0] - exit[0]) + \
-        abs(node.state.piece.position[1] - exit[1])) * 1.5
+        abs(node.state.piece.position[1] - exit[1])) / ((node.state.piece.height+1)/2)
     portalKeys = list(node.state.portals.keys())
 
     if len(portalKeys) > 0:
@@ -242,8 +243,8 @@ def h1(node: TreeNode):
         distance_from_player_to_p2 = abs(portal2_pos[0] - node.state.piece.position[0]) + \
         abs(portal2_pos[1] - node.state.piece.position[1])
 
-        distance_to_exit_through_p1 = (distance_from_p2_to_exit + distance_from_player_to_p1) * 1.5
-        distance_to_exit_through_p2 = (distance_from_p1_to_exit + distance_from_player_to_p2) * 1.5
+        distance_to_exit_through_p1 = (distance_from_p2_to_exit + distance_from_player_to_p1) * ((node.state.piece.height+1)/2)
+        distance_to_exit_through_p2 = (distance_from_p1_to_exit + distance_from_player_to_p2) * ((node.state.piece.height+1)/2)
 
         return min(distance, distance_to_exit_through_p1, distance_to_exit_through_p2)
 

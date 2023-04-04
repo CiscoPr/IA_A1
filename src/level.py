@@ -1,7 +1,9 @@
 import pygame
 import sys
 import time
-from game import Piece, PieceState, execute_move, Victory, Defeat, Teleport, MoveDirection, GameState
+
+
+from game import Piece, PieceState, execute_move, Victory, Defeat, Teleport, MoveDirection, GameState, breadth_first_search
 
 
 def game_loop(gamestate,screen, size):
