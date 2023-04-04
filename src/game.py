@@ -24,6 +24,7 @@ class AiLevel(Enum):
     DFS = 1
     GREEDY = 2
     ASTAR = 3
+    WASTAR = 4    
 
 
 class MoveDirection(Enum):
@@ -103,6 +104,10 @@ class GameState:
         elif (self.aiLevel == AiLevel.ASTAR.value):
             initial_node = a_star_search(self, h1)
             self.aiMoves = solution_moves(initial_node)
+        elif (self.aiLevel == AiLevel.WASTAR.value):
+            initial_node = weighted_a_star_search(self, h1)
+            self.aiMoves = solution_moves(initial_node)    
+        
 
     def getAiMove(self):
 
@@ -319,6 +324,8 @@ def greedy_search(initial_state, goal_state_func, operators_func, heuristic):
 def a_star_search(initial_state, heuristic):
     return greedy_search(initial_state, Victory, child_gamestates, lambda node: node.cost() + heuristic(node))
 
+def weighted_a_star_search(initial_state, heuristic):
+    return greedy_search(initial_state, Victory, child_gamestates, lambda node: node.cost() + 3*heuristic(node))
 
 def execute_move(State: GameState, Move: MoveDirection, isAi):
     if (Move == MoveDirection.UP):

@@ -2,6 +2,7 @@ import pygame
 import os
 from level import *
 from instructions import *
+from game import AiLevel
 
 
 def level_selector(title_font, screen, size, background, font, pointer_x, isAi, mode = 0):
@@ -116,7 +117,7 @@ def level_selector(title_font, screen, size, background, font, pointer_x, isAi, 
 
 
 def ai_select(title_font, screen, size, font, pointer_x, background):
-    options = ["Beginner - BFS", "Beginner - DFS", "Medium - Greedy","Expert - A*" , "Return"]
+    options = ["Beginner - BFS", "Beginner - DFS", "Medium - Greedy","Expert - A*", "Expert - Weighted A*" , "Return"]
     option_rects = []
 
     done = False
@@ -144,16 +145,19 @@ def ai_select(title_font, screen, size, font, pointer_x, background):
                         done = True
                     elif options[selected_option] == "Beginner - BFS":      # TODO- add the AI mode
                         print("Beginner - BFS")
-                        level_selector(title_font, screen, size, background, font, pointer_x, True, 0)
+                        level_selector(title_font, screen, size, background, font, pointer_x, True, AiLevel.BFS.value)
                     elif options[selected_option] == "Beginner - DFS":      # TODO- add the AI mode
                         print("Beginner - DFS")
-                        level_selector(title_font, screen, size, background, font, pointer_x, True, 1)
+                        level_selector(title_font, screen, size, background, font, pointer_x, True, AiLevel.DFS.value)
                     elif options[selected_option] == "Medium - Greedy":      # TODO- add the AI mode
                         print("Medium - Greedy")
-                        level_selector(title_font, screen, size, background, font, pointer_x, True, 2)
+                        level_selector(title_font, screen, size, background, font, pointer_x, True, AiLevel.GREEDY.value)
                     elif options[selected_option] == "Expert - A*":         # TODO- add the AI mode
                         print("Expert - A*")
-                        level_selector(title_font, screen, size, background, font, pointer_x, True, 3)
+                        level_selector(title_font, screen, size, background, font, pointer_x, True, AiLevel.ASTAR.value)
+                    elif options[selected_option] == "Expert - Weighted A*":         # TODO- add the AI mode
+                        print("Expert - Weighted A*")
+                        level_selector(title_font, screen, size, background, font, pointer_x, True, AiLevel.WASTAR.value)    
                     print("Selected option:", options[selected_option])
 
         # Clear the screen
@@ -172,6 +176,8 @@ def ai_select(title_font, screen, size, font, pointer_x, background):
             pointer_size = font.size("> ")[1] + 10
         else:
             pointer_size = font.size("> ")[1]
+        
+        
         # Draw pointer
         pointer_rect = pygame.Rect(pointer_x, option_rects[selected_option].centery - pointer_size // 2, pointer_size, pointer_size)
 
