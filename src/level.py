@@ -151,6 +151,7 @@ def display_endgame(screen, w_or_l):
 
 
 def start_game(filepath, isAi, mode = 0):
+
     board: list(list(int)) = []
     piece: Piece = Piece((0,0), PieceState.UP,2)
     firstPortal: tuple[int, int] = None

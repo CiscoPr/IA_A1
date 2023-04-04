@@ -4,8 +4,10 @@ from dataclasses import dataclass
 from collections import deque
 import heapq
 import time
+import sys
 from memory_profiler import memory_usage
 
+instruction_count=0
 
 def position_is_0(board, position):
     if position[0] < 0 or position[0] >= len(board[0]) or position[1] < 0 or position[1] >= len(board):
@@ -28,6 +30,11 @@ def maxMemory(fun, *args):
 
 
 
+def tracefunc(frame, event, arg):
+    if event == "line":
+        global instruction_count
+        instruction_count += 1
+    return tracefunc
 
 
 class PieceState(Enum):
@@ -107,36 +114,54 @@ class GameState:
         return "(" + str(self.piece) + ")"
 
     def setAiMoves(self):
+        global instruction_count
         if (self.aiLevel == AiLevel.BFS.value):
           
             funcTime(breadth_first_search,self,Victory,child_gamestates)
             maxMemory(breadth_first_search,self,Victory,child_gamestates)
-           
+            sys.settrace(tracefunc)
             initial_node = breadth_first_search(
                 self, Victory, child_gamestates)
-            
+            sys.settrace(None)
+            print(f"Number of instructions executed: {instruction_count}")
+            instruction_count=0
             self.aiMoves = solution_moves(initial_node)
         elif (self.aiLevel == AiLevel.DFS.value):
-            args = [self, Victory, child_gamestates]
             funcTime(depth_first_search,self,Victory,child_gamestates)
             maxMemory(depth_first_search,self,Victory,child_gamestates)
+            sys.settrace(tracefunc)
             initial_node = depth_first_search(
                 self, Victory, child_gamestates)
+            sys.settrace(None)
+            print(f"Number of instructions executed: {instruction_count}")
+            instruction_count=0
             self.aiMoves = solution_moves(initial_node)
         elif (self.aiLevel == AiLevel.GREEDY.value):
             funcTime(greedy_search,self,Victory,child_gamestates,h1)
             maxMemory(greedy_search,self,Victory,child_gamestates,h1)
+            sys.settrace(tracefunc)
             initial_node = greedy_search(self, Victory, child_gamestates, h1)
+            sys.settrace(None)
+            print(f"Number of instructions executed: {instruction_count}")
+            instruction_count=0
             self.aiMoves = solution_moves(initial_node)
         elif (self.aiLevel == AiLevel.ASTAR.value):
             funcTime(a_star_search,self,h1)
             maxMemory(a_star_search, self, h1)
+            sys.settrace(tracefunc)
             initial_node = a_star_search(self, h1)
+            sys.settrace(None)
+            print(f"Number of instructions executed: {instruction_count}")
+            instruction_count=0
             self.aiMoves = solution_moves(initial_node)
         elif (self.aiLevel == AiLevel.WASTAR.value):
             funcTime(weighted_a_star_search,self,h1)
             maxMemory(weighted_a_star_search,self,h1)
+            sys.settrace(tracefunc)
             initial_node = weighted_a_star_search(self, h1)
+            sys.settrace(None)
+            print(f"Number of instructions executed: {instruction_count}")
+            instruction_count=0
             self.aiMoves = solution_moves(initial_node)    
         
 
